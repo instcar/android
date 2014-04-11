@@ -37,21 +37,24 @@ public class RegisterActivity extends BaseActivity {
         public void handleMessage(Message msg) { 
             String  data;
             NetEntry entry;
+           
         	switch (msg.what) { 
             
             case HandleConfig.AUTHPHONE://验证手机号码有效性返回的数据
+            	 dismissProcessDialog();
             	data = msg.getData().getString("data");
             	 entry = new NetEntry(data);
             	if(NetEntry.CODESUCESS.equals(entry.status)){
             		isPhoneOk=true;
             		setEditStatus(phone, 1);
             	}else{
+            		showToastError(entry.msg);
             		isPhoneOk=false;
             		setEditStatus(phone, 0);
             	}
             	break;
             case HandleConfig.GETAUTHCODE://获取短信验证码
-            	
+            	 dismissProcessDialog();
             	 data = msg.getData().getString("data");
             	 entry = new NetEntry(data);
             	 System.out.println(entry.toString());
@@ -64,10 +67,11 @@ public class RegisterActivity extends BaseActivity {
                 break;
                 
             case HandleConfig.USERREGISTER://用户注册
+            	 dismissProcessDialog();
             	data = msg.getData().getString("data");
             	entry = new NetEntry(data);
             	if(NetEntry.CODESUCESS.equals(entry.status)){//注册成功了，
-            		showToastError("注册成功了");
+            		showToastError(entry.msg);
             	}else{//注册不成功
             		showToastError(entry.msg);
             	}
@@ -135,6 +139,7 @@ public class RegisterActivity extends BaseActivity {
 					showToastError("密码太短了");
 					return;
 				}
+				showProcessDialog("正在注册，请稍后");
 				userRegister(phonemun, smsid, authcode, passwordt);
 			}
 		});
@@ -143,8 +148,8 @@ public class RegisterActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				String str = phone.getText().toString();
-				MyLog.d("获取验证码了"+str);
 				if((StringUtils.vilidateLength(str)==11)&&StringUtils.isPhoneNum(str)){
+					showProcessDialog("正在获取验证码");
 					getAuthCode(str);
 				}else{
 					showToastError("亲，输入正确的手机号码");

@@ -1,69 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical" 
         android:gravity="center_horizontal"
         android:layout_width="fill_parent" android:layout_height="fill_parent">
 
-    
-    
-    
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:src="@drawable/image_logo_start" />
-
-
 
     <TextView
         android:id="@+id/textView1"
+        android:layout_below="@id/imageView1"
         android:background="@drawable/common_top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:text="您好" />
 
     <android.support.v4.view.ViewPager
             android:id="@+id/pager"
+            android:layout_below="@id/textView1"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0px"
             >
     </android.support.v4.view.ViewPager>
-    <LinearLayout android:orientation="horizontal"
-        android:background="@drawable/start_bottom_bar"
+    <RelativeLayout android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+                android:background="@drawable/start_bottom_bar"
             android:gravity="bottom|center_horizontal" 
             android:layout_gravity="bottom"
             android:layout_width="fill_parent" android:layout_height="wrap_content"
-            android:layout_marginBottom="10dip"
             >
         <Button
-             android:id="@+id/button_register"
-             android:padding="0dip"
-             android:layout_marginRight="10dip"
+            android:layout_alignParentLeft="true"
+             android:id="@+id/button_opt"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:background="@drawable/btn_more"
             
-             android:layout_weight="1"
             />
-        <Button android:id="@+id/button_login"
-            android:padding="0dip"
-            android:layout_weight="1"
-            android:layout_marginLeft="10dip"
+        <Button 
+            
+            android:id="@+id/button_user"
+            android:layout_centerInParent="true"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:background="@drawable/btn_user"
             />
-        <Button android:id="@+id/button_login"
-            android:padding="0dip"
-            android:layout_marginLeft="10dip"
-                      android:layout_weight="1"
+        <Button 
+            android:layout_alignParentRight="true"
+            android:id="@+id/button_set"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:background="@drawable/btn_seting"
             />
-    </LinearLayout>
-</LinearLayout>
+    </RelativeLayout>
+
+
+
+</RelativeLayout>
 
