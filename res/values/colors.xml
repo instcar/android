@@ -35,4 +35,9 @@
 	
 	<color name="buffer_textview">#0069bd</color>
 	<color name="baseColor">#91C855</color>
+	<color name="bgcolor">#F3f3f3</color>
+	<color name="base_gray">#DBDBDB</color>
+	<color name="text_gray">#858585</color>
+	
+
 </resources>
