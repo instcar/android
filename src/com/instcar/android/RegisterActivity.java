@@ -3,6 +3,7 @@ package com.instcar.android;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,72 +32,6 @@ import com.mycommonlib.android.common.util.StringUtils;
 public class RegisterActivity extends BaseActivity {
 	
 	
-	private Handler mHandler = new Handler(){ 
-		public int count=60;
-		
-        public void handleMessage(Message msg) { 
-            String  data;
-            NetEntry entry;
-           
-        	switch (msg.what) { 
-            
-            case HandleConfig.AUTHPHONE://验证手机号码有效性返回的数据
-            	 dismissProcessDialog();
-            	data = msg.getData().getString("data");
-            	 entry = new NetEntry(data);
-            	if(NetEntry.CODESUCESS.equals(entry.status)){
-            		isPhoneOk=true;
-            		setEditStatus(phone, 1);
-            	}else{
-            		showToastError(entry.msg);
-            		isPhoneOk=false;
-            		setEditStatus(phone, 0);
-            	}
-            	break;
-            case HandleConfig.GETAUTHCODE://获取短信验证码
-            	 dismissProcessDialog();
-            	 data = msg.getData().getString("data");
-            	 entry = new NetEntry(data);
-            	 System.out.println(entry.toString());
-             	if(NetEntry.CODESUCESS.equals(entry.status)){//已经发送成功了
-             		smsid = entry.netentry.smsid;
-             		this.sendEmptyMessageDelayed(HandleConfig.AUTHCODE_DELAY, 1000);
-            	}else{//发送不成功
-            		showToastError(entry.msg);
-            	}
-                break;
-                
-            case HandleConfig.USERREGISTER://用户注册
-            	 dismissProcessDialog();
-            	data = msg.getData().getString("data");
-            	entry = new NetEntry(data);
-            	if(NetEntry.CODESUCESS.equals(entry.status)){//注册成功了，
-            		showToastError(entry.msg);
-            	}else{//注册不成功
-            		showToastError(entry.msg);
-            	}
-            	break; 
-                
-            case HandleConfig.AUTHCODE_DELAY:
-            	count--;
-            	//if(count==60){
-            		btnCheckPhoneCode.setEnabled(false);
-            	//}
-            	btnCheckPhoneCode.setText("("+count+")秒之后重新发送");
-            	if(count>1){
-            		this.sendEmptyMessageDelayed(HandleConfig.AUTHCODE_DELAY, 1000);
-            	}
-            	if(count==1){
-            		btnCheckPhoneCode.setEnabled(true);
-            		count=60;
-            		btnCheckPhoneCode.setText(R.string.registergetauthcode);
-            		btnCheckPhoneCode.setEnabled(true);
-            	}
-            	break;
-              
-            } 
-        }; 
-    }; 
     
     EditText phone ;
     EditText phonecode ;
@@ -115,6 +50,74 @@ public class RegisterActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_activity_register);
+		mHandler = new Handler(){ 
+			public int count=60;
+			
+	        public void handleMessage(Message msg) { 
+	            String  data;
+	            NetEntry entry;
+	           
+	        	switch (msg.what) { 
+	            
+	            case HandleConfig.AUTHPHONE://验证手机号码有效性返回的数据
+	            	 dismissProcessDialog();
+	            	data = msg.getData().getString("data");
+	            	 entry = new NetEntry(data);
+	            	if(NetEntry.CODESUCESS.equals(entry.status)){
+	            		isPhoneOk=true;
+	            		setEditStatus(phone, 1);
+	            	}else{
+	            		showToastError(entry.msg);
+	            		isPhoneOk=false;
+	            		setEditStatus(phone, 0);
+	            	}
+	            	break;
+	            case HandleConfig.GETAUTHCODE://获取短信验证码
+	            	 dismissProcessDialog();
+	            	 data = msg.getData().getString("data");
+	            	 entry = new NetEntry(data);
+	            	 System.out.println(entry.toString());
+	             	if(NetEntry.CODESUCESS.equals(entry.status)){//已经发送成功了
+	             		smsid = entry.netentry.smsid;
+	             		this.sendEmptyMessageDelayed(HandleConfig.AUTHCODE_DELAY, 1000);
+	            	}else{//发送不成功
+	            		showToastError(entry.msg);
+	            	}
+	                break;
+	                
+	            case HandleConfig.USERREGISTER://用户注册
+	            	 dismissProcessDialog();
+	            	data = msg.getData().getString("data");
+	            	entry = new NetEntry(data);
+	            	if(NetEntry.CODESUCESS.equals(entry.status)){//注册成功了，
+	            		
+	            		showToastError(entry.msg);
+	            	}else{//注册不成功
+	            		showToastError(entry.msg);
+	            	}
+	            	break; 
+	                
+	            case HandleConfig.AUTHCODE_DELAY:
+	            	count--;
+	            	//if(count==60){
+	            		btnCheckPhoneCode.setEnabled(false);
+	            	//}
+	            	btnCheckPhoneCode.setText("("+count+")秒之后重新发送");
+	            	if(count>1){
+	            		this.sendEmptyMessageDelayed(HandleConfig.AUTHCODE_DELAY, 1000);
+	            	}
+	            	if(count==1){
+	            		btnCheckPhoneCode.setEnabled(true);
+	            		count=60;
+	            		btnCheckPhoneCode.setText(R.string.registergetauthcode);
+	            		btnCheckPhoneCode.setEnabled(true);
+	            	}
+	            	break;
+	              
+	            } 
+	        }; 
+	    }; 
+		
 		phone = (EditText) findViewById(R.id.textuserName);
 		phonecode = (EditText) findViewById(R.id.textphonecode);
 		password = (EditText) findViewById(R.id.textpassword);
@@ -197,52 +200,6 @@ public class RegisterActivity extends BaseActivity {
 		return true;
 	}
 
-	/*
-	 * 用户注册
-	 */
-	public void userRegister(String phoneNum,String smsid,String authcode,String password){
-		Map<String , String> param= new  HashMap<String, String>();
-	//	smsid="11632456";
-		
-		param.put("phone", phoneNum);
-		param.put("password", password);
-		param.put("authcode", authcode);
-		param.put("smsid", smsid);
-		CommonService service = new CommonService(Config.apiserveruserregister());
-		service.setParam(param);
-		service.setAv(av);
-		UserRegisterThread thread = new UserRegisterThread();
-		thread.setHandle(mHandler);
-		thread.setService(service);
-		new Thread(thread).start(); 
-		
-	}
-	
-	public void  getAuthCode( String phoneNum){
-		Map<String , String> param= new  HashMap<String, String>();
-		param.put("phone",phoneNum);
-		CommonService service = new CommonService(Config.apiserverusergetauthcode());
-		service.setParam(param);
-		service.setAv(av);
-		GetPhoneCodeThread thread = new GetPhoneCodeThread();
-		thread.setHandle(mHandler);
-		thread.setService(service);
-		new Thread(thread).start(); 
-		
-	}
-	
 
-	public void AuthPhone( String phoneNum){
-		Map<String , String> param= new  HashMap<String, String>();
-		param.put("phone", phoneNum);
-		CommonService service = new CommonService(Config.apiuserCheckUserPhone());
-		service.setParam(param);
-		service.setAv(av);
-		AuthPhoneThread phoneThread = new AuthPhoneThread();
-		phoneThread.setHandle(mHandler);
-		phoneThread.setService(service);
-		new Thread(phoneThread).start();  		
-		
-	}
 
 }

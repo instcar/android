@@ -58,6 +58,64 @@ public class Config {
 		return BASEURL+"server/user/detail";
 	}
 	
+	/*
+	 *  用户详细信息获取
+	 */
+	public static String apiserveruseredit(){
+		
+		return BASEURL+"server/user/edit";
+	}
+	
+	/*
+	 *  增加car
+	 */
+	public static String apiserveruseraddcar(){
+		
+		return BASEURL+"server/user/addcar";
+	}
+	
+	/*
+	 *  获取car
+	 */
+	public static String apiserverusergetcars(){
+		
+		return BASEURL+"server/user/getcars";
+	}
+	
+	/*
+	 *  实名认证
+	 */
+	public static String apiserveruserrealnamerequest(){
+		
+		return BASEURL+"server/user/realnamerequest";
+	}
+	
+	
+	/*
+	 *  实名认证
+	 */
+	public static String apiserveruserlogout(){
+		
+		return BASEURL+"server/user/logout";
+	}
+	
+	/*
+	 *  
+	 */
+	public static String apiserverimageupload(){
+		
+		return BASEURL+"server/image/upload";
+	}
+	
+	
+	/*
+	 *   根据品牌查询汽车
+	 */
+	public static String apiservercarlist(){
+		
+		return BASEURL+"server/car/list";
+	}
+	
 	
 	
 	

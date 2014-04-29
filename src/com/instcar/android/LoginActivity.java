@@ -1,7 +1,5 @@
 package com.instcar.android;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,12 +13,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.instcar.android.config.Config;
 import com.instcar.android.config.HandleConfig;
 import com.instcar.android.entry.NetEntry;
-import com.instcar.android.service.CommonService;
-import com.instcar.android.thread.GetUserInfoThread;
-import com.instcar.android.thread.LoginThread;
 import com.instcar.android.util.MyLog;
 import com.mycommonlib.android.common.util.StringUtils;
 /**
@@ -30,39 +24,6 @@ import com.mycommonlib.android.common.util.StringUtils;
  */
 public class LoginActivity extends BaseActivity {
 
-	private Handler mHandler = new Handler(){ 
-        
-        public void handleMessage(Message msg) { 
-        	String data ;
-        	NetEntry entry;
-            switch (msg.what) { 
-            case HandleConfig.AUTHLOGIN: 
-              	data = msg.getData().getString("data");
-            	entry = new NetEntry(data);
-            	if(NetEntry.CODESUCESS.equals(entry.status)){//
-            		showToastError("登陆成功了");
-            		userdetail(entry.netentry.uid);
-            	}else{//
-            		showToastError(entry.msg);
-            	}
-            	
-            	
-            	
-                break; 
-             case HandleConfig.GETUSERINFO://获取用户信息成功
-            	 data = msg.getData().getString("data");
-             	entry = new NetEntry(data);
-             	if(NetEntry.CODESUCESS.equals(entry.status)){//，
-             		Intent i = new Intent(LoginActivity.this, MainActivity.class);
-            		startActivity(i);
-             	}else{
-             		showToastError(entry.msg);
-             	}
-             	
-            	 break; 
-            } 
-        }; 
-    }; 
     
     EditText userName ;
     EditText password ;
@@ -70,6 +31,47 @@ public class LoginActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		 mHandler = new Handler(){ 
+		        
+		        public void handleMessage(Message msg) { 
+		        	String data ;
+		        	NetEntry entry;
+		        	
+		            switch (msg.what) { 
+		            case HandleConfig.AUTHLOGIN: 
+		            	dismissProcessDialog();
+		              	data = msg.getData().getString("data");
+		            	entry = new NetEntry(data);
+		            	if(NetEntry.CODESUCESS.equals(entry.status)){//
+		            		//showToastError("登陆成功了");
+		            		av.setUid(entry.netentry.id);
+		            		userdetail(entry.netentry.id);
+		            	}else{//
+		            		showToastError(entry.msg);
+		            	}
+		            	
+		            	
+		            	
+		                break; 
+		             case HandleConfig.GETUSERINFO://获取用户信息成功
+		            	 data = msg.getData().getString("data");
+		             	entry = new NetEntry(data);
+		             	dismissProcessDialog();
+		             	if(NetEntry.CODESUCESS.equals(entry.status)){//，
+		             		dismissProcessDialog();
+		             		Intent i = new Intent(LoginActivity.this, MainActivity.class);
+		            		startActivity(i);
+		            		LoginActivity.this.finish();
+		            	
+		            		av.setUserData(entry.netentry);
+		             	}else{
+		             		showToastError(entry.msg);
+		             	}
+		             	
+		            	 break; 
+		            } 
+		        }; 
+		    }; 
 		setContentView(R.layout.layout_activity_login);
 		userName = (EditText) findViewById(R.id.textuserName);
 		password = (EditText) findViewById(R.id.textpassword);
@@ -132,6 +134,8 @@ public class LoginActivity extends BaseActivity {
 				String  spassword = password.getText().toString();
 				MyLog.d(suserName+spassword);
 				if(!StringUtils.isEmpty(suserName)&&!StringUtils.isEmpty(spassword)&&StringUtils.isPhoneNum(suserName)){
+					showProcessDialog("正在登陆中..");
+					
 					login(suserName, spassword);
 					
 				}
@@ -145,33 +149,7 @@ public class LoginActivity extends BaseActivity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	public void login(String phone,String password){
-		Map<String , String> param= new  HashMap<String, String>();
-		param.put("phone",phone);
-		param.put("password",password);
-		
-		CommonService service = new CommonService(Config.apiserveruserlogin());
-		service.setParam(param);
-		service.setAv(av);
-		LoginThread thread = new LoginThread();
-		thread.setHandle(mHandler);
-		thread.setService(service);
-		new Thread(thread).start(); 
-		
-	}
-	public void userdetail(String uid){
-		Map<String , String> param= new  HashMap<String, String>();
-		param.put("uid",uid);
-		
-		CommonService service = new CommonService(Config.apiserveruserdetail());
-		service.setParam(param);
-		service.setAv(av);
-		GetUserInfoThread thread = new GetUserInfoThread();
-		thread.setHandle(mHandler);
-		thread.setService(service);
-		new Thread(thread).start(); 
-		
-	}
+
 	
 	
 

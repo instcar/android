@@ -27,6 +27,7 @@ import com.mycommonlib.android.common.util.StringUtils;
  * 
  * @dujie
  * 选择出行路线的activity
+ * 
  */
 public class SelectWayActivity extends BaseActivity {
 

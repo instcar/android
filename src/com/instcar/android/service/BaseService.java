@@ -58,10 +58,8 @@ public abstract class BaseService {
 							s.append(";");
 						}
 					}
-					MyLog.d(cookie.get(i));
 				}
 			}
-			MyLog.d("收到的cookie",s.toString());
 			av.setStringCookie(s.toString());
 		}
 	}
@@ -73,7 +71,7 @@ public abstract class BaseService {
 	public void postCookie(HttpRequest request){
 		String cookie = av.getStringCookie();
 		
-		MyLog.d("发送的cookie",cookie+"");
+		//MyLog.d("发送的cookie",cookie+"");
 		request.setRequestProperty("Cookie", cookie);
 		
 	}

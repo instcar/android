@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.instcar.android.entry.NetDataEntry;
 import com.mycommonlib.android.common.util.StringUtils;
 
 /**
@@ -16,6 +17,8 @@ public class ApplicationVar extends Application {
 	private String phone; // 
 	private String username; // 
 	private String cookie; //
+	private String uid; //
+	private NetDataEntry userdata; //
 	
     
 	
@@ -24,32 +27,31 @@ public class ApplicationVar extends Application {
 	 * 
 	 */
 
-	
-//public void SetCookie(List<String> cookie){
-//	if(cookie!=null){
-//		SharedPreferences.Editor mEditor = pref.edit();
-//		HashSet< String> set = new HashSet<String>();
-//		
-//		set.addAll(cookie);
-//		mEditor.putStringSet("cookie", set);
-//		mEditor.commit();
-//		this.cookie = cookie;
-//	}
-//}
-//
-//public List<String>  getCookie(){
-//	
-//	
-//	Set<String> set  = pref.getStringSet("cookie", null);
-//	List <String> list  = new ArrayList<String>();
-//	if(set!=null){
-//		list.addAll(set);
-//	}
-//	this.cookie  = list;
-//	
-//	return this.cookie;
-//}
+	public void setUserData(NetDataEntry userdata){
+		this.userdata = userdata;
+		
+	}
+	public NetDataEntry getUserData(){
+		return this.userdata;
+	}
 
+	
+	public void setUid(String uid){
+		
+		if(!StringUtils.isEmpty(uid.trim())){
+			SharedPreferences.Editor mEditor = pref.edit();
+			mEditor.putString("uid", uid);
+			mEditor.commit();
+			this.uid = uid;
+		}
+		
+	}
+	public String getUid(){
+		String s = pref.getString("uid", "");
+		this.uid = s;
+		return this.uid;
+		
+	}
 public void setStringCookie(String cookie){
 	
 	if(!StringUtils.isEmpty(cookie.trim())){
@@ -74,5 +76,7 @@ public String getStringCookie(){
 
 		
 	}
+	
+	
 
 }
