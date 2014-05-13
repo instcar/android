@@ -1,5 +1,11 @@
 package com.instcar.android.entry;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import com.mycommonlib.android.common.util.JSONUtils;
 import com.mycommonlib.android.common.util.StringUtils;
 
@@ -9,6 +15,7 @@ public class NetDataEntry {
 	public static String USER_STATE_RENZHENGING="3";
 	
 	
+	public String total="";//短信验证码获取smsid
 	public String smsid="";//短信验证码获取smsid
 	public String phone="";//短信验证码获取phone	
 	public String uid="";//短信验证码获取phone	
@@ -25,6 +32,15 @@ public class NetDataEntry {
 	public String show_comp_addr="";
 	public String uploadfile="";
 	public String ischeck="";//1:验证通过；2：未通过实名认证；3：正在认证中
+	public String lat="";
+	public String lng="";
+	public String geohash="";
+	public String district="";
+	public String city="";
+	public List<NetDataEntry> list= new ArrayList<NetDataEntry>();
+
+	
+	//1:验证通过；2：未通过实名认证；3：正在认证中
 	
 	
 	public NetDataEntry(String jsonString) {
@@ -45,6 +61,30 @@ public class NetDataEntry {
 			this.show_home_addr= JSONUtils.getString(jsonString, "show_home_addr", "");
 			this.show_comp_addr= JSONUtils.getString(jsonString, "show_comp_addr", "");
 			this.uploadfile= JSONUtils.getString(jsonString, "uploadfile", "");
+			this.lat= JSONUtils.getString(jsonString, "lat", "");
+			this.lng= JSONUtils.getString(jsonString, "lng", "");
+			this.geohash= JSONUtils.getString(jsonString, "geohash", "");
+			this.district= JSONUtils.getString(jsonString, "district", "");
+			this.city= JSONUtils.getString(jsonString, "city", "");
+			
+			
+			this.total= JSONUtils.getString(jsonString, "total", "");
+			
+			if(JSONUtils.getJSONArray(jsonString, "list",null)!=null){
+				JSONArray arr = JSONUtils.getJSONArray(jsonString, "list",null);
+				for(int i=0;i<arr.length();i++){
+					String innerdata;
+					try {
+						innerdata = arr.getString(i);
+						this.list.add(  new NetDataEntry(innerdata));
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+				
+			}
 		}else{
 
 		}

@@ -1,8 +1,11 @@
 package com.instcar.android;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,24 +14,28 @@ import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.baidu.mapapi.BMapManager;
-import com.baidu.mapapi.map.MapController;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.OverlayItem;
+import com.baidu.mapapi.search.MKPlanNode;
 import com.baidu.platform.comapi.basestruct.GeoPoint;
 import com.baidu.voicerecognition.android.Candidate;
 import com.baidu.voicerecognition.android.VoiceRecognitionClient;
 import com.baidu.voicerecognition.android.VoiceRecognitionClient.VoiceClientStatusChangeListener;
 import com.baidu.voicerecognition.android.VoiceRecognitionConfig;
+import com.instcar.android.adapter.LineListAdapter;
 import com.instcar.android.adapter.PointListAdapter;
 import com.instcar.android.config.HandleConfig;
+import com.instcar.android.entry.Line;
+import com.instcar.android.entry.MyOverLayItem;
 import com.instcar.android.entry.NetDataEntry;
 import com.instcar.android.entry.NetEntry;
 import com.instcar.android.util.Config;
@@ -36,7 +43,7 @@ import com.instcar.android.util.Config;
 /**
  * 演示MapView的基本用法
  */
-public class HaveCarActivity extends MapBaseActivity {
+public class HaveCarV2Activity extends MapBaseV2Activity {
 
 	final static String TAG = "MainActivity";
 	/**
@@ -54,11 +61,19 @@ public class HaveCarActivity extends MapBaseActivity {
 
 	ImageButton button_sub;
 	ImageButton button_add;
+	Button button_start;
+	
 	ListView pointlist;
 	PointListAdapter pointListAdapter;
+	LineListAdapter lineListAdapter;
 
 	private View view;
 
+	private  Line currentLine;
+	public List<Line> linelist =new ArrayList<Line>();
+
+	
+	
 	private MyVoiceRecogListener voiceListener;
 	private VoiceRecognitionConfig config;
 	private VoiceRecognitionClient mASREngine;
@@ -66,10 +81,9 @@ public class HaveCarActivity extends MapBaseActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mBMapMan = new BMapManager(getApplication());
-		mBMapMan.init(null);
+
 		// 注意：请在试用setContentView前初始化BMapManager对象，否则会报错
-		setContentView(R.layout.have_car_main);
+		setContentView(R.layout.have_car_main_v2);
 		mMapView = (MapView) findViewById(R.id.bmapView);
 		mMapView.setBuiltInZoomControls(false);
 		mMapView.setOnTouchListener(new OnTouchListener() {
@@ -81,7 +95,7 @@ public class HaveCarActivity extends MapBaseActivity {
 			}
 		});
 		// 设置启用内置的缩放控件
-		MapController mMapController = mMapView.getController();
+		mMapController = mMapView.getController();
 		// 得到mMapView的控制权,可以用它控制和驱动平移和缩放
 		GeoPoint point = new GeoPoint((int) (39.915 * 1E6),
 				(int) (116.404 * 1E6));
@@ -91,18 +105,36 @@ public class HaveCarActivity extends MapBaseActivity {
 		initview();
 		initVoice();
 		initHandle();
-		List<NetDataEntry> list = new ArrayList<NetDataEntry>();
-		pointListAdapter = new PointListAdapter(this, list);
-		pointlist.setAdapter(pointListAdapter);
-		;
+		lineListAdapter = new LineListAdapter(this, linelist);
+		pointlist.setAdapter(lineListAdapter);
+		initMyLocationLayer();
 		initOverLay();// 初始化图层
 		initPopOverLay();
 		initPopView();// 初始化弹出图层
 		initLocationSet();
-		// getCurrentLocation();
+		setstatus(STATUS_EDITINPUT);
+		queryPiont("", "");//查询所有的point
+		initRouteOverlay();
+		pointlist.setOnItemClickListener(new  OnItemClickListener() {
 
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				currentLine= linelist.get(position);
+				pointlist.setVisibility(View.GONE);
+				refreshMapView();
+				
+			}
+			
+		});
 	}
 
+	@Override
+	void LocationRefresh() {
+		super.LocationRefresh();
+		textview_start.setText(myBaidulocation.getStreet());
+		
+	}
 	void startVoice() {
 		mASREngine.startVoiceRecognition(voiceListener, config);
 	}
@@ -138,15 +170,12 @@ public class HaveCarActivity extends MapBaseActivity {
 				case HandleConfig.QUERYPOINT:
 					NetEntry entry = decodePointList(msg.getData().getString(
 							"data"));
-
 					if (NetEntry.CODESUCESS.equals(entry.status)) {
-
 						if (entry.netentry.list.size() > 0) {// 获取到数据了 条数大于0
-							pointlist.setVisibility(View.VISIBLE);
-							pointListAdapter
-									.updateListView(entry.netentry.list);// 刷新列表
+//							pointlist.setVisibility(View.VISIBLE);
+//							pointListAdapter
+//									.updateListView(entry.netentry.list);// 刷新列表
 							addpointToview(entry.netentry);
-
 						}
 
 					} else {
@@ -162,6 +191,17 @@ public class HaveCarActivity extends MapBaseActivity {
 							(int) (currentLocation.getLatitude() * 1E6),
 							(int) (currentLocation.getLongitude() * 1E6));
 					mMapView.getController().animateTo(pt3);
+					break;
+					
+				case HandleConfig.QUERYLINELIST:
+					 entry =new NetEntry(msg.getData().getString("data"));
+					 if (NetEntry.CODESUCESS.equals(entry.status)) {
+						 linelist = decoeLineList((msg.getData().getString("data")));
+						 pointlist.setVisibility(View.VISIBLE);
+						 lineListAdapter.updateListView(linelist);
+					 }
+					
+					
 					break;
 				default:
 					break;
@@ -179,6 +219,7 @@ public class HaveCarActivity extends MapBaseActivity {
 			if (entry != null && entry.list.size() > 0) {
 				mOverlay.removeAll();
 				mItems.clear();
+				mitemsMap.clear();
 				mCurItem = null;
 				mStartItem = null;
 				mEndItem = null;
@@ -188,11 +229,13 @@ public class HaveCarActivity extends MapBaseActivity {
 					GeoPoint p4 = new GeoPoint(
 							(int) (Double.valueOf(data.lat) * 1E6),
 							(int) (Double.valueOf(data.lng) * 1E6));
-					OverlayItem item1 = new OverlayItem(p4, data.name, "");
+					MyOverLayItem item1 = new MyOverLayItem(p4, data.name, "");
 					item1.setMarker(getResources().getDrawable(
 							R.drawable.point_empty));
+					item1.id = Integer.valueOf(data.id);
 					mOverlay.addItem(item1);
 					mItems.add(item1);
+					mitemsMap.put(data.id, item1);
 
 				}
 
@@ -217,7 +260,7 @@ public class HaveCarActivity extends MapBaseActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				HaveCarActivity.this.finish();
+				HaveCarV2Activity.this.finish();
 			}
 		});
 		textview_start = (TextView) findViewById(R.id.textview_start);
@@ -228,7 +271,7 @@ public class HaveCarActivity extends MapBaseActivity {
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
 				// TODO Auto-generated method stub
-				queryPiont(s.toString(), "");
+				queryLineList(s.toString());
 
 			}
 
@@ -243,6 +286,25 @@ public class HaveCarActivity extends MapBaseActivity {
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
 
+			}
+		});
+		edittext_end.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if (hasFocus) {
+					pointlist.setVisibility(View.VISIBLE);
+				}else{
+					pointlist.setVisibility(View.GONE);
+				}
+			}
+		});
+		edittext_end.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				pointlist.setVisibility(View.VISIBLE);
 			}
 		});
 
@@ -261,6 +323,20 @@ public class HaveCarActivity extends MapBaseActivity {
 		button_onsearch = (ImageButton) findViewById(R.id.button_onsearch);
 		button_onsearch.setVisibility(View.GONE);
 
+		button_start = (Button) findViewById(R.id.button_start);
+		button_start.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(currentLine!=null){
+					av.setCurrentLine(currentLine);
+					Intent i = new Intent(HaveCarV2Activity.this,HaveCarCreateActivity.class);
+					startActivity(i);
+				}else{
+					showToastError("请选择线路");
+				}
+			}
+		});
+		
 		mylocation = (ImageButton) findViewById(R.id.button_mylocation);
 		mylocation.setOnClickListener(new OnClickListener() {
 
@@ -297,7 +373,8 @@ public class HaveCarActivity extends MapBaseActivity {
 		});
 
 		pointlist = (ListView) findViewById(R.id.listview_point);
-
+		//将所有点都放在地图上
+		
 	}
 
 	public void setstatus(int status) {
@@ -508,18 +585,52 @@ public class HaveCarActivity extends MapBaseActivity {
 	}
 
 	void refreshMapView() {
-
+		if(currentLine !=null){
+			MKPlanNode stNode = new MKPlanNode();
+			MKPlanNode enNode = new MKPlanNode();
+			
+			
+			for (int i = 0; i < currentLine.list.size(); i++) {
+				MyOverLayItem item = mitemsMap.get(currentLine.list.get(i).id);
+				if(item!=null){
+					if(i==0){
+						mStartItem = item;
+							stNode.pt = item.getPoint();
+					}
+					if(i==currentLine.list.size()-1){
+						mEndItem = item;
+						enNode.pt = item.getPoint();
+					}
+					mOverlay.updateItem(item);
+				}
+			}
+			mSearch.drivingSearch("北京", stNode, "北京", enNode);
+			
+		}else{
+		
+			
+		}
+		
+		
 		// 判断起点终点是否为空，如果不为空，就展现之，
-		if (mStartItem != null) {
+		if (mStartItem != null&&currentLine!=null) {
 			mStartItem.setMarker(getResources().getDrawable(
 					R.drawable.point_start));
 			mOverlay.updateItem(mStartItem);
+			mMapView.getController().animateTo(mStartItem.getPoint());
+		}else if(mStartItem!=null){
+			mStartItem.setMarker(getResources().getDrawable(
+					R.drawable.point_empty));
+			mOverlay.updateItem(mStartItem);
 		}
-		if (mEndItem != null) {
+		if (mEndItem != null&&currentLine!=null) {
+			
 			mEndItem.setMarker(getResources().getDrawable(R.drawable.point_end));
 			mOverlay.updateItem(mEndItem);
+		}else if(mEndItem!=null){
+			mEndItem.setMarker(getResources().getDrawable(R.drawable.point_empty));
+			mOverlay.updateItem(mEndItem);
 		}
-
 		mMapView.refresh();
 
 	}

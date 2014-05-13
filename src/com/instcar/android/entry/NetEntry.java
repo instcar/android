@@ -1,5 +1,8 @@
 package com.instcar.android.entry;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.instcar.android.util.MyLog;
 import com.mycommonlib.android.common.util.JSONUtils;
 import com.mycommonlib.android.common.util.StringUtils;
@@ -11,6 +14,7 @@ public class NetEntry {
 	
 	public String status;
 	public String msg;
+	public String data;
 	public NetDataEntry netentry;
 	public NetEntry() {
 		

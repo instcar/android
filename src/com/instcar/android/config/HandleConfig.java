@@ -23,6 +23,23 @@ public class HandleConfig {
 	public static final int ADDCAR=1007;// 
 	public static final int GETCAR=1008;// 
 	public static final int SETHEADIMG=1009;// 
+	public static final int RECEIVELOCATION=1013;// 收到定位信息
+	
+	public static final int QUERYNEARPOINT=1014;//查询周边据点信息
+	
+	public static final int QUERYPOINT=1015;//查询周边据点信息
+	
+	public static final int QUERYLINELIST=1016;//查询周边据点信息
+	public static final int CREATEROOM=1017;//创建房间
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

@@ -116,6 +116,30 @@ public class Config {
 		return BASEURL+"server/car/list";
 	}
 	
+	/*
+	 *   查询周边据点
+	 */
+	public static String apiserverpointnearestlist(){
+		
+		return BASEURL+"server/point/nearestlist";
+	}
+	/*
+	 * 
+	 */
+	public static String apiserverpointlist(){
+		
+		return BASEURL+"server/point/list";
+	}
+	
+	public static String apiserverlinelist(){
+		
+		return BASEURL+"server/line/listline";
+	}
+	public static String apiservercreateroom(){
+		
+		return BASEURL+"server/room/create";
+	}
+	
 	
 	
 	

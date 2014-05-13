@@ -3,13 +3,19 @@ package com.instcar.android;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,6 +30,9 @@ import android.widget.TextView;
 
 import com.instcar.android.config.Config;
 import com.instcar.android.config.HandleConfig;
+import com.instcar.android.entry.CarPoint;
+import com.instcar.android.entry.Line;
+import com.instcar.android.entry.NetEntry;
 import com.instcar.android.service.CommonService;
 import com.instcar.android.service.UploadImageService;
 import com.instcar.android.thread.AuthPhoneThread;
@@ -37,6 +46,7 @@ import com.instcar.android.util.ApplicationVar;
 import com.instcar.android.util.MyLog;
 import com.instcar.android.util.SdCard;
 import com.mycommonlib.android.common.util.ImageUtils;
+import com.mycommonlib.android.common.util.JSONUtils;
 import com.mycommonlib.android.common.util.StringUtils;
 import com.mycommonlib.android.common.util.ToastUtils;
 
@@ -348,6 +358,170 @@ public class BaseActivity extends Activity {
 		
 		
 	}
+	
+	/*
+	 * 查询手边据点信息
+	 */
+	public void querynearPiont(Double lat,Double lng){
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("page", "1");
+		param.put("rows", "20");
+		param.put("lat", String.valueOf(lat));
+		param.put("lng", String.valueOf(lng));
 
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apiserverpointnearestlist());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.QUERYNEARPOINT);
+		new Thread(thread).start();
 
+		
+	}
+	
+	/*
+	 *  模糊查询据点信息
+	 */
+	public void queryPiont(String wd,String city){
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("page", "1");
+		param.put("rows", "20");
+		param.put("wd", wd);
+		
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apiserverpointlist());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.QUERYPOINT);
+		new Thread(thread).start();
+		
+		
+	}
+	
+	public void queryLineList(String wd){
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("page", "1");
+		param.put("rows", "20");
+		param.put("wd", wd);
+		param.put("all", "1");
+		
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apiserverlinelist());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.QUERYLINELIST);
+		new Thread(thread).start();
+		
+	}
+	/*参数	类型
+user_id	int
+line_id	int
+price	int
+description	string
+start_time	date
+max_seat_num	int
+
+*/
+	public void createRoom(Line line,String desc ,String date,String numseat){
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("user_id", av.getUserData().phone);
+		param.put("line_id", line.id);
+		param.put("price", line.price);
+		param.put("description", desc);
+		param.put("start_time", date);
+		param.put("max_seat_num", numseat);
+		
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apiservercreateroom());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.CREATEROOM);
+		new Thread(thread).start();
+		
+	}
+	//解析据点jsonlist
+	public NetEntry decodePointList(String s){
+		NetEntry entry = new NetEntry(s);
+		return entry;
+		
+		
+		
+	}
+
+	public List<Line> decoeLineList(String data){
+		List<Line> arr = new ArrayList<Line>();
+		try {
+			JSONObject json = new JSONObject(data);
+			JSONObject datalist = json.getJSONObject("data");
+			JSONArray jsonlist = datalist.getJSONArray("list");
+			if(jsonlist!=null&&jsonlist.length()>0){
+				for (int i = 0; i < jsonlist.length(); i++) {
+					
+					Line l = deoceLine(jsonlist.get(i));
+					if(l!=null){
+						arr.add(l);
+					}
+				}
+				
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return arr;
+		
+	}
+	
+	
+	public Line deoceLine(Object obj){
+		Line l = null;
+		try{
+			
+		if(obj==null) return null;
+		JSONObject json = (JSONObject)obj;
+		l = new Line();
+		l.id=json.getString("id");
+		l.name=json.getString("name");
+		l.description=json.getString("description");
+		l.price=json.getString("price");
+		l.addtime=json.getString("addtime");
+		l.modtime=json.getString("modtime");
+		if(json.getJSONArray("list")!=null){
+			JSONArray innerList = json.getJSONArray("list");
+			
+			if(innerList.length()>0){
+				for (int i = 0; i < innerList.length(); i++) {
+					JSONObject innerdata = innerList.getJSONObject(i);
+					CarPoint p = new CarPoint();
+					p.id = innerdata.getString("point_id");
+					p.price = innerdata.getString("price");
+					l.list.add(p);
+				}
+			}
+		}
+		
+		}catch (Exception e) {
+
+	}
+		return l;
+	}
 }
