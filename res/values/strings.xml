@@ -11,5 +11,6 @@
     <string name="registergetauthcode">免费获取验证码</string>
     <string name="phone">手机号</string>
     <string name="password">密码</string>
+        <string name="error_occur">出错: 0x%1$s</string>
 
 </resources>

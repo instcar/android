@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bgcolor"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="0dip" >
+
+    <include
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        layout="@layout/layout_top_bar_style2" />
+
+    <ScrollView
+        android:scrollbars="none"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+            >
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/s2" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_time"
+                    android:text="出发时间"
+                    android:textColor="@color/base_gray"
+                    android:textSize="16sp" />
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_time"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
+
+                        <kankan.wheel.widget.WheelView
+                            android:id="@+id/shangwu"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <kankan.wheel.widget.WheelView
+                            android:id="@+id/hour"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@android:color/transparent"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=":"
+                            android:textColor="@color/white"
+                            android:textSize="20sp" />
+
+                        <kankan.wheel.widget.WheelView
+                            android:id="@+id/min"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:clickable="false"
+                        android:src="@drawable/line_time" />
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_people"
+                    android:text="可载人数"
+                    android:textColor="@color/base_gray"
+                    android:textSize="16sp" />
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_empty"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal" >
+
+                    <kankan.wheel.widget.WheelView
+                        android:layout_alignParentLeft="true"
+                        android:id="@+id/people"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_people" />
+
+                    <RatingBar
+                        android:layout_alignParentRight="true"
+                        android:id="@+id/ratingbar1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="4"
+                        android:stepSize="1"
+                       android:max="4" 
+                        android:progressDrawable="@drawable/rate_seat"
+                        android:rating="4" />
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_edit"
+                    android:text="附加信息"
+                    android:textColor="@color/base_gray" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <EditText
+                        android:id="@+id/create_room_desc"
+                        android:layout_width="fill_parent"
+                        android:layout_height="50dip"
+                        android:background="@drawable/bg_gray_square" />
+                </LinearLayout>
+
+                <Button
+                    android:layout_marginTop="10dip"
+                       android:id="@+id/create_room_ok"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="确定发布"
+                    
+                    android:background="@drawable/btn_addcar" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
