@@ -37,6 +37,7 @@ public class NetDataEntry {
 	public String geohash="";
 	public String district="";
 	public String city="";
+	public String openfire="";
 	public List<NetDataEntry> list= new ArrayList<NetDataEntry>();
 
 	
@@ -66,8 +67,7 @@ public class NetDataEntry {
 			this.geohash= JSONUtils.getString(jsonString, "geohash", "");
 			this.district= JSONUtils.getString(jsonString, "district", "");
 			this.city= JSONUtils.getString(jsonString, "city", "");
-			
-			
+			this.openfire= JSONUtils.getString(jsonString, "openfire", "");
 			this.total= JSONUtils.getString(jsonString, "total", "");
 			
 			if(JSONUtils.getJSONArray(jsonString, "list",null)!=null){

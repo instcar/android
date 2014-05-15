@@ -82,7 +82,7 @@ public class SetActivity extends BaseActivity implements OnClickListener {
 			
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(SetActivity.this, SelectCarBandActivity.class);
+				Intent i = new Intent(SetActivity.this, VerfyCarActivity.class);
 				startActivity(i);
 				
 			}

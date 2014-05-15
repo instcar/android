@@ -102,6 +102,7 @@ public class MessageActivity extends BaseActivity implements OnClickListener{
 		page1 = (ImageView) findViewById(R.id.page1_select);
 		page2 = (ImageView) findViewById(R.id.page2_select);
 		mListView = (ListView) findViewById(R.id.listview);
+		mListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 		// 引入表情
 		expressionImages = Expressions.expressionImgs;
 		expressionImageNames = Expressions.expressionImgNames;
@@ -178,7 +179,6 @@ public class MessageActivity extends BaseActivity implements OnClickListener{
 
 		gView3 = (GridView) inflater.inflate(R.layout.grid3, null);
 		grids.add(gView3);
-		System.out.println("GridView的长度 = " + grids.size());
 
 		// 填充ViewPager的数据适配器
 		PagerAdapter mPagerAdapter = new PagerAdapter() {
@@ -240,37 +240,18 @@ public class MessageActivity extends BaseActivity implements OnClickListener{
 					Message message = (Message) packet;
 					MyLog.d(message.getBody());
 					ChatMsgEntity entity = new ChatMsgEntity();
-					SimpleDateFormat s = new  SimpleDateFormat("Y-m-d H:i:s");
-					entity.setDate(TimeUtils.getCurrentTimeInString(s));
+					entity.setDate(getDate());
 					entity.setName(message.getFrom());
 					entity.setMsgType(true);
 					entity.setText(message.getBody());
+					
+
 					mDataArrays.add(entity);
 					mAdapter.notifyDataSetChanged();
-					mListView.setSelection(mListView.getCount() - 1);
+					mListView.setSelection(mListView.getBottom());
 				}
 			});
-		//	chat = connection.getChatManager().createChat("ay140222164105110546z", new MessageListener() {
 
-			
-
-//				@Override
-//				public void processMessage(Chat arg0, Message message) {
-//					// TODO Auto-generated method stub
-//					
-//					ChatMsgEntity entity = new ChatMsgEntity();
-//					entity.setDate(dateArray[1]);
-//					entity.setName("小黑");
-//					entity.setMsgType(true);
-//					entity.setText(message.getBody());
-//					mDataArrays.add(entity);
-//					mAdapter.notifyDataSetChanged();
-//					mListView.setSelection(mListView.getCount() - 1);
-//						
-//					 System.out.println("Received message: " + message.getBody());
-//				}
-//			});
-//			chat.sendMessage("Howdy!");
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

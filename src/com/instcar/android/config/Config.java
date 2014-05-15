@@ -140,6 +140,12 @@ public class Config {
 		return BASEURL+"server/room/create";
 	}
 	
+	public static String getOpenFireIp(){
+		return "115.28.231.132";
+	}
+	public static int getOpenFirePort(){
+		return 13000;
+	}
 	
 	
 	
