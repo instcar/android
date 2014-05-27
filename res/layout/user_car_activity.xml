@@ -25,6 +25,7 @@
             android:clickable="true" />
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/mapzhezhao"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -93,24 +94,25 @@
                     android:orientation="horizontal" >
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="fill_parent"
+                        android:layout_height="50dip"
                         android:layout_alignParentLeft="true"
-                        android:orientation="vertical" >
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="终点:"
+                            android:text="我要去:"
                             android:textColor="@color/base_gray" />
 
                         <EditText
                             android:id="@+id/edittext_end"
-                            android:layout_width="200dip"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
-                            android:text="潮白人家"
-                            android:textColor="@color/base_gray" />
+                            android:textColor="@color/black"
+                             />
                     </LinearLayout>
 
                     <ImageButton
@@ -125,6 +127,7 @@
                         android:visibility="gone" />
 
                     <ImageButton
+                        android:visibility="gone"
                         android:id="@+id/button_onsearch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -156,23 +159,25 @@
                     android:id="@+id/button_mylocation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_number"
-                    android:src="@drawable/ic_arrow_s" />
+                    android:background="@drawable/abtn_lucency"
+                    android:src="@drawable/ic_location" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:background="@drawable/bg_number"
+                    android:background="@drawable/abtn_lucency"
                     android:gravity="center"
+                
                     android:orientation="horizontal" >
 
                     <ImageButton
+                        android:layout_marginLeft="5dip"
                         android:id="@+id/button_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
-                        android:src="@drawable/ic_subtraction" />
+                        android:src="@drawable/ic_shrink" />
 
                     <TextView
                         android:id="@+id/textview_mi"
@@ -181,14 +186,15 @@
                         android:layout_marginLeft="10dip"
                         android:layout_marginRight="10dip"
                         android:minWidth="50dip"
-                        android:text="200米" />
+                        android:text="   " />
 
                     <ImageButton
+                        android:layout_marginRight="5dip"
                         android:id="@+id/button_add"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
-                        android:src="@drawable/ic_addition" />
+                        android:src="@drawable/ic_magnify" />
                 </LinearLayout>
             </RelativeLayout>
         </RelativeLayout>

@@ -42,11 +42,12 @@
 	            android:layout_marginLeft="10dp"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:background="@drawable/chatfrom_bg" 
+	            android:background="@drawable/im_self" 
 	          	style="@style/chat_content_date_style"/>   
 	                 
 	                  
 	            <TextView 
+	                android:visibility="gone"
 	            android:id="@+id/tv_username" 
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
