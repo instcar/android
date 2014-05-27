@@ -2,15 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/chat_bg_default" >
+    android:background="@color/white" >
 
-    
-        <include
-            android:id="@+id/rl_layout"
+    <include
+        android:id="@+id/rl_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         layout="@layout/layout_top_bar_style2" />
-    
+
     <RelativeLayout
         android:id="@+id/rl_bottom"
         android:layout_width="fill_parent"
@@ -20,7 +19,7 @@
 
         <LinearLayout
             android:id="@+id/ll_anniu"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
 
@@ -54,18 +53,19 @@
                 android:minWidth="0.0dip"
                 android:paddingBottom="4.0dip"
                 android:paddingTop="5.0dip"
-                android:visibility="visible"
-                android:src="@drawable/chatting_setmode_biaoqing_btn" />
+                android:src="@drawable/chatting_setmode_biaoqing_btn"
+                android:visibility="visible" />
+
             <ImageButton
                 android:id="@+id/chatting_biaoqing_focuse_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:background="@null"
                 android:minWidth="0.0dip"
-                android:visibility="gone"
                 android:paddingBottom="4.0dip"
                 android:paddingTop="5.0dip"
-                android:src="@drawable/chatting_setmode_biaoqing_btn" />
+                android:src="@drawable/chatting_setmode_biaoqing_btn"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/ll_fasong"
@@ -77,8 +77,9 @@
 
                 <EditText
                     android:id="@+id/et_sendmessage"
-                    android:layout_width="175dip"
+                    android:layout_width="match_parent"
                     android:layout_height="40dip"
+                    android:layout_weight="0.3"
                     android:background="@drawable/login_edit_normal"
                     android:paddingTop="5.0dip"
                     android:singleLine="true"
@@ -86,10 +87,11 @@
 
                 <Button
                     android:id="@+id/btn_send"
-                    android:layout_width="wrap_content"
+                    android:layout_width="fill_parent"
                     android:layout_height="40dp"
                     android:layout_marginLeft="3dip"
                     android:layout_marginRight="3dip"
+                    android:layout_weight="1"
                     android:background="@drawable/chat_send_btn"
                     android:paddingTop="5.0dip"
                     android:text="发送" />
@@ -125,48 +127,73 @@
             android:background="#f32f33"
             android:visibility="gone" >
         </android.support.v4.view.ViewPager>
+
         <LinearLayout
             android:id="@+id/page_select"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/viewpager"
             android:background="#ddd"
-            android:visibility="gone"
-        	android:gravity="center_horizontal"     >
-            
+            android:gravity="center_horizontal"
+            android:visibility="gone" >
+
             <ImageView
-            	android:id="@+id/page0_select"
-        		android:layout_width="wrap_content"
-        		android:layout_height="wrap_content"        	     	
-        		android:scaleType="matrix"
-        		android:src="@drawable/page_focused" />
+                android:id="@+id/page0_select"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="matrix"
+                android:src="@drawable/page_focused" />
+
             <ImageView
-            	android:id="@+id/page1_select"
-        		android:layout_width="wrap_content"
-        		android:layout_height="wrap_content"
-        		android:layout_marginLeft="10dp"        	     	
-        		android:scaleType="matrix"
-        		android:src="@drawable/page_unfocused" />
+                android:id="@+id/page1_select"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:scaleType="matrix"
+                android:src="@drawable/page_unfocused" />
+
             <ImageView
-            	android:id="@+id/page2_select"
-        		android:layout_width="wrap_content"
-        		android:layout_height="wrap_content"
-        		android:layout_marginLeft="10dp"           	     	
-        		android:scaleType="matrix"
-        		android:src="@drawable/page_unfocused" />           
+                android:id="@+id/page2_select"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:scaleType="matrix"
+                android:src="@drawable/page_unfocused" />
         </LinearLayout>
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/listview"
+    <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@id/rl_bottom"
-        android:layout_below="@id/rl_layout"
-        android:cacheColorHint="#0000"
-        android:divider="@null"
-        android:dividerHeight="5dp"
-        android:scrollbarStyle="outsideOverlay"
-        android:stackFromBottom="true" />
+        android:layout_below="@id/rl_layout" >
+
+        <ListView
+            android:id="@+id/listview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:cacheColorHint="#0000"
+            android:divider="@null"
+            android:dividerHeight="5dp"
+            android:scrollbarStyle="outsideOverlay"
+            android:stackFromBottom="true" />
+	   <LinearLayout
+	    android:id="@+id/small_window_layout"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="right"
+		android:background="@drawable/bg_number"
+	    >
+	    <TextView 
+	        android:id="@+id/numberseat"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:gravity="center"
+	        android:text="1"
+	        android:clickable="true"
+	        android:background="@drawable/a1number1"
+	        />
+</LinearLayout>
+    </FrameLayout>
 
 </RelativeLayout>

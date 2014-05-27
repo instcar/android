@@ -2,89 +2,74 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@color/bgcolor"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="0dip" >
-<include  layout="@layout/layout_top_bar"/>    
 
-<ImageView 
-    android:id="@+id/st_logo"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-	android:src="@drawable/st_logo"    
-	/>
+    <include layout="@layout/layout_top_bar" />
 
-   
     <EditText
-        android:layout_marginTop="30dip"
         android:id="@+id/textuserName"
-        android:gravity="center_vertical"
         style="@style/common_input"
-        android:inputType="number"
-        android:background="@drawable/common_input_bg"
+        android:layout_marginTop="30dip"
+        android:drawableRight="@drawable/ic_agree_no"
+        android:gravity="center_vertical"
         android:hint="@string/login_hit_user_name"
-        android:maxLength="11"
-        android:drawableRight="@drawable/ic_agree_no"
-        />
-    
-    <Button 
+        android:inputType="number"
+        android:maxLength="11" />
+
+    <Button
         android:id="@+id/btn_getphonecode"
-		style="@style/common_textview"		   
-        android:layout_marginTop="10dip"
-        android:textSize="22sp"
-        android:layout_marginLeft="29sp"
-        android:layout_marginRight="29sp"
-        android:text="免费获取验证码"
-        android:background="@drawable/btn_orange"
-        />
-        
-    <EditText
- 	 	android:layout_marginTop="10dip"
-        android:id="@+id/textphonecode"
-        android:gravity="center_vertical"
-        style="@style/common_input"
-        android:inputType="phone"
-        android:maxLength="6"
-        android:background="@drawable/common_input_bg"
-        android:hint="@string/qingshuruliuweiduanxinyanhegnma"
-        android:drawableRight="@drawable/ic_agree_no"
-        />
-    
-    <EditText
-  android:layout_marginTop="10dip"
-        android:id="@+id/textpassword"
-        android:gravity="center_vertical"
-        style="@style/common_input"
-        android:inputType="textPassword"
-        android:maxLength="15"
-        android:background="@drawable/common_input_bg"
-        android:hint="@string/mimahit"
-        
-        android:drawableRight="@drawable/ic_agree_no"
-        />
-
-
-    <Button 
-        android:id="@+id/btn_login"
-         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" 
-        android:layout_marginTop="10dip"
+         style="@style/common_button"
+                 android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="29dip"
         android:layout_marginRight="29dip"
-        android:text="提交"
-        android:textSize="22sp"
-        android:textColor="#ffffff"
+        android:layout_marginTop="10dip"
+        android:background="@drawable/abtn_orange"
+        android:text="免费获取验证码"
+        
+        />
+
+    <EditText
+        android:id="@+id/textphonecode"
+        style="@style/common_input"
+        android:layout_marginTop="10dip"
+        android:drawableRight="@drawable/ic_agree_no"
+        android:gravity="center_vertical"
+        android:hint="@string/qingshuruliuweiduanxinyanhegnma"
+        android:inputType="phone"
+        android:maxLength="6" />
+
+    <EditText
+        android:id="@+id/textpassword"
+        style="@style/common_input"
+        android:layout_marginTop="10dip"
+        android:drawableRight="@drawable/ic_agree_no"
+        android:gravity="center_vertical"
+        android:hint="@string/mimahit"
+        android:inputType="textPassword"
+        android:maxLength="15" />
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="29dip"
+        android:layout_marginRight="29dip"
+        android:layout_marginTop="10dip"
         android:background="@drawable/btn_bule"
+        android:text="提交"
+style="@style/common_button"
         />
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:gravity="bottom"
         android:layout_gravity="bottom"
+        android:gravity="bottom"
         android:orientation="vertical" >
-
-
     </LinearLayout>
 
 </LinearLayout>
