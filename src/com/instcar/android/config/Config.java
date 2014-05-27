@@ -1,5 +1,11 @@
 package com.instcar.android.config;
 
+import java.io.File;
+
+import com.mycommonlib.android.common.util.FileUtils;
+
+import android.os.Environment;
+
 public class Config {
 
 	
@@ -139,6 +145,49 @@ public class Config {
 		
 		return BASEURL+"server/room/create";
 	}
+	public static String apiservergetroominfo(){
+		
+		return BASEURL+"server/room/getroominfo";
+	}
+	public static String apiservergetbyphone(){
+		
+		return BASEURL+"server/user/getbyphone";
+	}
+	
+	public static String apiservergetlinerooms(){
+		
+		return BASEURL+"server/room/getlinerooms";
+	}
+	
+	
+	public static String apiserverjoinroom(){
+		
+		return BASEURL+"server/room/book";
+	}
+	
+	
+	public static String apiListLineByid(){
+		return BASEURL+"server/line/listlinebyid";
+	}
+	
+	public static String apigetroomusers(){
+		
+		return BASEURL+"server/room/getroomusers";
+	}
+	
+	public static String apiserverlinefavoritelist(){
+		
+		return BASEURL+"server/line/favoritelist";
+	}
+	
+	public static String apiserverroomjoin(){
+		
+		return BASEURL+"server/room/book";
+	}
+	public static String apiserverroomquit(){
+		
+		return BASEURL+"server/room/unbook";
+	}
 	
 	public static String getOpenFireIp(){
 		return "115.28.231.132";
@@ -147,6 +196,26 @@ public class Config {
 		return 13000;
 	}
 	
-	
+	public static  String getSDPath(){ 
+	       File sdDir = null; 
+	       
+	       boolean sdCardExist = Environment.getExternalStorageState()   
+	                           .equals(Environment.MEDIA_MOUNTED);   //判断sd卡是否存在 
+	       if   (sdCardExist)   
+	       {                               
+	         sdDir = Environment.getExternalStorageDirectory();//获取跟目录 
+	      }   
+	       return sdDir.toString(); 
+	       
+	}
+	//获取file跟目录
+	public static  String getFilePath(){
+		String str = getSDPath()+".incar/";
+		if(!FileUtils.isFolderExist(str)){
+			FileUtils.makeDirs(str);
+		}
+		
+		return str;
+	}
 	
 }

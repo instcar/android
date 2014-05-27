@@ -219,7 +219,7 @@ public class SdCard
 		if (sdCardExist)
 		{ // 如果SD卡存在，则获取跟目录
 			File sdDir = Environment.getExternalStorageDirectory();// 获取跟目录
-			path = sdDir.toString() + "/.mdaren/reward_icon/";
+			path = sdDir.toString() + "/.incar/icon/";
 			File p = new File(path);
 			if (!p.exists())
 			{

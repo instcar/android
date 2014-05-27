@@ -30,9 +30,9 @@ public class StartActivity extends BaseActivity {
 	MyAdapter mAdapter;
 
 	ViewPager mPager;
-	Button btregister;
-	Button btLogin;
-	Button btforgetPass;
+	LinearLayout btregister;
+	LinearLayout btLogin;
+	LinearLayout btforgetPass;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,6 @@ public class StartActivity extends BaseActivity {
 			public void onPageSelected(int position) {
 				// TODO Auto-generated method stub
 				
-				MyLog.d("position==s"+position);
 				if(position==2){
 					btforgetPass.setVisibility(View.GONE);
 					btLogin.setVisibility(View.VISIBLE);
@@ -76,14 +75,14 @@ public class StartActivity extends BaseActivity {
 		});
 
 		// Watch for button clicks.
-		 btregister = (Button) findViewById(R.id.button_register);
+		 btregister = (LinearLayout) findViewById(R.id.button_register);
 		 btregister.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				Intent i = new Intent(StartActivity.this, RegisterActivity.class);
 				startActivity(i);
 			}
 		});
-		 btLogin = (Button) findViewById(R.id.button_login);
+		 btLogin = (LinearLayout) findViewById(R.id.button_login);
 		 btLogin.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				Intent i = new Intent(StartActivity.this, LoginActivity.class);
@@ -92,7 +91,7 @@ public class StartActivity extends BaseActivity {
 			}
 		});
 		 
-		 btforgetPass = (Button) findViewById(R.id.button_forgetpassword);
+		 btforgetPass = (LinearLayout) findViewById(R.id.button_forgetpassword);
 		 
 	}
 
@@ -164,8 +163,19 @@ public class StartActivity extends BaseActivity {
 			case 3:
 				l.setBackgroundResource(R.drawable.pic_4);
 				LinearLayout content = (LinearLayout) v.findViewById(R.id.start_frangent_content);
+				
 				content.setVisibility(View.VISIBLE);
 				
+				content.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						Intent i = new Intent(StartActivity.this, LoginActivity.class);
+						startActivity(i);
+						overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);  
+					}
+				});
 				break;
 
 

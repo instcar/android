@@ -43,7 +43,9 @@ public class ChoiceFragment  extends Fragment{
 			
 			@Override
 			public void onClick(View v) {
-				
+				Intent i = new Intent(getActivity(), UserCarActivity.class);
+				//	Intent i = new Intent(getActivity(), HaveCarCreateActivity.class);
+					startActivity(i);
 				
 			}
 		});

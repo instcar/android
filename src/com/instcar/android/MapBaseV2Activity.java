@@ -81,7 +81,10 @@ public class MapBaseV2Activity extends BaseActivity {
 
 	MKSearch mMKSearch = null;// 搜索的变量
 	 ArrayList<MyOverLayItem>  mItems = new ArrayList<MyOverLayItem>(); // 地图的搜索据点信息 //所有据点
-	 Map<String,MyOverLayItem> mitemsMap =new HashMap<String,MyOverLayItem>();
+	 Map<String,MyOverLayItem> mitemsMap =new HashMap<String,MyOverLayItem>();//搜索的据点，用map形式存储
+	 Map<String,Object> mitemmap_beixuan_zhongdian =new HashMap<String,Object>();//备选重点
+	 
+	 
 
 	 
 	
@@ -93,13 +96,11 @@ public class MapBaseV2Activity extends BaseActivity {
 	
 
 	
-
-	
-
-
-	
 	public static int STATUS_VOICESEARCH=1;
 	public static int STATUS_EDITINPUT=2;
+	 public boolean isfirststart=true;//如果是第一次,启用定位，更新起点信息，然后就置为FALSE、；不会再定位
+	 public boolean ishandlocation=true;//如果是第一次,启用定位，更新起点信息，然后就置为FALSE、；不会再定位
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -110,11 +111,6 @@ public class MapBaseV2Activity extends BaseActivity {
 	}
 	//初始化定位东西
 	void initLocationSet() {
-		MyLog.d("已经被调用");
-
-		
-		
-		
 		
 		mLocationClient = new LocationClient( this );
         locdata = new LocationData();
@@ -141,7 +137,7 @@ public class MapBaseV2Activity extends BaseActivity {
 	/*
 	 * 获取到location信息后  刷新界面的回调，
 	 */
-	void LocationRefresh(){
+	void LocationRefresh(BDLocation location){
 		
 	}
 	
@@ -218,14 +214,10 @@ public class MapBaseV2Activity extends BaseActivity {
 			 
 		 });
 		  routeOverlay = new RouteOverlay(MapBaseV2Activity.this, mMapView);
-		   routeOverlay.setStMarker(getResources().getDrawable(R.drawable.point_start));
-		   routeOverlay.setEnMarker(getResources().getDrawable(R.drawable.point_end));
+		  routeOverlay.setStMarker(getResources().getDrawable(R.drawable.point_start));
+		  routeOverlay.setEnMarker(getResources().getDrawable(R.drawable.point_end));
 		  mMapView.getOverlays().add(routeOverlay);
 		  
-	}
-	void initAll(){
-		
-		
 	}
 	
 	/**
@@ -260,9 +252,7 @@ public class MapBaseV2Activity extends BaseActivity {
 			//单次请求定位
 			mLocationClient.requestLocation();
 		} else{
-			
 			mLocationClient.start();
-			
 		}
 	}
 
@@ -417,10 +407,9 @@ public class MapBaseV2Activity extends BaseActivity {
 				OverlayItem item = getItem(index);
 				mCurItem = item ;
 				popviewtitle.setText(item.getTitle());
-				
 				pop.showPopup(popview,item.getPoint(),60);
 				    
-				    return true;
+				return true;
 				
 			}
 			
@@ -472,11 +461,14 @@ public class MapBaseV2Activity extends BaseActivity {
 	            //更新定位数据
 	            myLocationOverlay.setData(locdata);
 	            //更新图层数据执行刷新后生效
+	            if(mMapView!=null){
+	            	
 	            mMapView.refresh();
+	            }
 	            //是手动触发请求或首次定位时，移动到定位点
 	            	//移动地图到定位点
-	              //  mMapController.animateTo(new GeoPoint((int)(locdata.latitude* 1e6), (int)(locdata.longitude *  1e6)));
-				LocationRefresh();
+	              // mMapController.animateTo(new GeoPoint((int)(locdata.latitude* 1e6), (int)(locdata.longitude *  1e6)));
+				LocationRefresh( location);
 	            //首次定位完成
 	        }
 	        

@@ -1,5 +1,9 @@
 package com.instcar.android.util;
 
+import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
+
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
@@ -31,7 +35,7 @@ public class ApplicationVar extends Application {
 	private NetDataEntry userdata; //
 	private Line currentLine; //
 	
-	
+	XMPPConnection connection ;
 	
 	public Line getCurrentLine() {
 		return currentLine;
@@ -159,6 +163,25 @@ public static ApplicationVar getInstance() {
 	return mInstance;
 }
 
+public void initOpenFireConnect(){
+	ConnectionConfiguration config = new ConnectionConfiguration(
+			"115.28.231.132", 13000);
+	config.setSASLAuthenticationEnabled(false);  
+	config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);  
+	connection = new XMPPConnection(config);
+	try {
+		connection.connect();
+	} catch (XMPPException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+public XMPPConnection  getOpenfireConnect(){
+	if(connection==null){
+		initOpenFireConnect();
+	}
+	return connection;
+}
 // 常用事件监听，用来处理通常的网络错误，授权验证错误等
 public static class MyGeneralListener implements MKGeneralListener {
     

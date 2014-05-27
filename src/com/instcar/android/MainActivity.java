@@ -12,6 +12,9 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,8 +39,9 @@ public class MainActivity extends BaseActivity {
 	ImageView round3;
 	
 	TextView nav_hint;//显示提示信息用的
-	
+	View v;
 	long currentmillions=0;
+	private boolean iszhankai=true;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +50,20 @@ public class MainActivity extends BaseActivity {
 		
 		
 		mPager = (ViewPager) findViewById(R.id.pager);
-		
+		v = findViewById(R.id.menu);
 		nav_hint = (TextView) findViewById(R.id.text_nav);
 		btn_opt1 = (ImageButton) findViewById(R.id.button_opt);
+		btn_opt1.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(iszhankai==true){
+					Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.menu_left_out);
+					v.startAnimation(animation);
+					
+				}
+			}
+		});
 		btuser =(ImageButton) findViewById(R.id.button_user);
 		btsetting = (ImageButton) findViewById(R.id.button_set);
 		

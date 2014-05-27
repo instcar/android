@@ -73,6 +73,9 @@ public class LoginActivity extends BaseActivity {
 		        }; 
 		    }; 
 		setContentView(R.layout.layout_activity_login);
+		initBaseNav();
+		navbar.setText("登陆");
+		
 		userName = (EditText) findViewById(R.id.textuserName);
 		password = (EditText) findViewById(R.id.textpassword);
 		password.addTextChangedListener(new TextWatcher() {

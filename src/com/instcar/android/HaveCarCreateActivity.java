@@ -8,6 +8,8 @@ import java.util.Locale;
 import com.baidu.platform.comapi.basestruct.GeoPoint;
 import com.instcar.android.config.HandleConfig;
 import com.instcar.android.entry.NetEntry;
+import com.mycommonlib.android.common.util.StringUtils;
+import com.mycommonlib.android.common.util.TimeUtils;
 
 import kankan.wheel.widget.OnWheelChangedListener;
 import kankan.wheel.widget.WheelView;
@@ -51,6 +53,7 @@ public class HaveCarCreateActivity extends BaseActivity {
 	 String[] minarr = new String[60];
 	 String[] shangwuarr = {"今天","明天","后天"};
 	 
+	 private boolean isfirststart=true;//如果是第一次,启用定位，更新起点信息，然后就置为FALSE、；不会再定位
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,9 +97,6 @@ public class HaveCarCreateActivity extends BaseActivity {
 	        adapter.setTextSize(25);
 	        hours.setViewAdapter(adapter); 
 	        hours.setCyclic(true);
-	        
-	        
-	        
 	         
 	        
 	        for (int i = 0; i < 60; i++) {
@@ -146,12 +146,18 @@ public class HaveCarCreateActivity extends BaseActivity {
 		buttonok.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				Calendar c = Calendar.getInstance();
+				String year = String.valueOf(c.get(Calendar.YEAR));
+				String month = String.valueOf(c.get(Calendar.MONTH) + 1);
 				String shour = hoursarr[hours.getCurrentItem()];
 				String smin = minarr[mins.getCurrentItem()];
-				String people = peopleRate.getRating()+"";
+				float people = peopleRate.getRating();
+				int day = shangwu.getCurrentItem();
+				String strdar = String.valueOf(c.get(Calendar.DAY_OF_MONTH)+day-1);
+				
 				String desc  = edittextdesc.getText().toString();
 				showProcessDialog("正在进入房间");
-				createRoom(av.getCurrentLine(), desc, "201405110909", people);
+				createRoom(av.getCurrentLine(), desc, year+"-"+month+"-"+strdar+" "+shour+":"+smin, people+"");
 			}
 		});
 		
@@ -168,14 +174,25 @@ public class HaveCarCreateActivity extends BaseActivity {
 					NetEntry entry = decodePointList(msg.getData().getString(
 							"data"));
 					if (NetEntry.CODESUCESS.equals(entry.status)) {
-							showToastError("创建房间成功");
+						Intent i = new Intent(HaveCarCreateActivity.this, MessageActivity.class);
+						String roomid=entry.netentry.id;
+						String openfire = entry.netentry.openfire;
+						if(StringUtils.isEmpty(roomid)||StringUtils.isEmpty(openfire)){
+							
+							showToastError("创建房间失败");
+						}else{
+							i.putExtra("roomid", roomid);
+							i.putExtra("openfire", openfire);
+							
+							startActivity(i);
+							HaveCarCreateActivity.this.finish();
+						}
 					} else {
 
 						showToastError(entry.msg);
 					}
 
-					Intent i = new Intent(HaveCarCreateActivity.this, MessageActivity.class);
-					startActivity(i);
+				
 					break;
 				default:
 					break;
@@ -255,6 +272,21 @@ public class HaveCarCreateActivity extends BaseActivity {
 			return items[index];
 		}
     }
+    
+    private String getDate() {
+		Calendar c = Calendar.getInstance();
+		String year = String.valueOf(c.get(Calendar.YEAR));
+		String month = String.valueOf(c.get(Calendar.MONTH) + 1);
+		String day = String.valueOf(c.get(Calendar.DAY_OF_MONTH));
+		String hour = String.valueOf(c.get(Calendar.HOUR_OF_DAY));
+		String mins = String.valueOf(c.get(Calendar.MINUTE));
+
+		StringBuffer sbBuffer = new StringBuffer();
+		sbBuffer.append(year + "-" + month + "-" + day + " " + hour + ":"
+				+ mins);
+		return sbBuffer.toString();
+	}
+
         // Count of days to be shown
 }
 

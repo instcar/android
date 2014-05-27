@@ -1,6 +1,5 @@
 package com.instcar.android;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -17,13 +16,10 @@ import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.webkit.URLUtil;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -274,6 +270,39 @@ public class BaseActivity extends Activity {
 		new Thread(thread).start();
 
 	}
+	// 获取room详细信息
+	public void getroominfo(String roomid) {
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("room_id", roomid);
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apiservergetroominfo());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.GETROOMINFO);
+		new Thread(thread).start();
+		
+	}
+	public void getdetailbyphone(String phone) {
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("phone", phone);
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apiservergetbyphone());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.QUERYUSERDETAIL);
+		new Thread(thread).start();
+		
+	}
 
 	// 图片上传
 	public void imageupload(String type, String user_id, Bitmap photo) {
@@ -428,6 +457,112 @@ public class BaseActivity extends Activity {
 		new Thread(thread).start();
 		
 	}
+	public void queryRoomListByLineid(String lineid){
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("line_id", lineid);
+		
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apiservergetlinerooms());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.QUERTLINEROOMS);
+		new Thread(thread).start();
+		
+	}
+	public void joinRoom(String roomid,String userid){
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("room_id", roomid);
+		param.put("userid", userid);
+		
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apiserverjoinroom());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.JOINROOM);
+		new Thread(thread).start();
+		
+	}
+	public void QueryRoomUsers(String roomid){
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("room_id", roomid);
+		
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apigetroomusers());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.QUERYROOMUSERS);
+		new Thread(thread).start();
+		
+	}
+	
+	public void queryLineDetail(String lineid){
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("lineid", lineid);
+		
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apiListLineByid());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.QUERYLINEDETAIL);
+		new Thread(thread).start();
+		
+	}
+	public void joinroom(String roomid,String user_id){
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("room_id", roomid);
+		param.put("user_id", user_id);
+		
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apiserverroomjoin());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.JOINROOM);
+		new Thread(thread).start();
+		
+	}
+	public void quitroom(String roomid,String user_id){
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("room_id", roomid);
+		param.put("user_id", user_id);
+		
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apiserverroomquit());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.QUITROOM);
+		new Thread(thread).start();
+		
+	}
 	/*参数	类型
 user_id	int
 line_id	int
@@ -439,7 +574,7 @@ max_seat_num	int
 */
 	public void createRoom(Line line,String desc ,String date,String numseat){
 		Map<String, String> param = new IdentityHashMap<String, String>();
-		param.put("user_id", av.getUserData().phone);
+		param.put("user_id", av.getUserData().id);
 		param.put("line_id", line.id);
 		param.put("price", line.price);
 		param.put("description", desc);

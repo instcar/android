@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import android.annotation.SuppressLint;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import com.baidu.location.BDLocation;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.search.MKPlanNode;
@@ -43,8 +44,7 @@ import com.instcar.android.util.Config;
 /**
  * 演示MapView的基本用法
  */
-@SuppressLint("ResourceAsColor")
-public class HaveCarV2Activity extends MapBaseV2Activity {
+public class UserCarActivity extends MapBaseV2Activity {
 
 	final static String TAG = "MainActivity";
 	/**
@@ -124,7 +124,6 @@ public class HaveCarV2Activity extends MapBaseV2Activity {
 					int position, long id) {
 				currentLine= linelist.get(position);
 				pointlist.setVisibility(View.GONE);
-				btn_right.setVisibility(View.VISIBLE);
 				refreshMapView();
 				
 				
@@ -147,7 +146,32 @@ public class HaveCarV2Activity extends MapBaseV2Activity {
 		}
 	}
 
+	void startVoice() {
+		mASREngine.startVoiceRecognition(voiceListener, config);
+	}
 
+	void initVoice() {
+		voiceListener = new MyVoiceRecogListener();
+		mASREngine = VoiceRecognitionClient.getInstance(this);
+		mASREngine.setTokenApis("8MAxI5o7VjKSZOKeBzS4XtxO",
+				"Ge5GXVdGQpaxOmLzc8fOM8309ATCz9Ha");
+		config = new VoiceRecognitionConfig();
+		config.setProp(Config.CURRENT_PROP);
+		config.setLanguage(Config.getCurrentLanguage());
+		config.enableVoicePower(Config.SHOW_VOL); // 音量反馈。
+		if (Config.PLAY_START_SOUND) {
+			// config.enableBeginSoundEffect(R.raw.bdspeech_recognition_start);
+			// // 设置识别开始提示音
+		}
+		if (Config.PLAY_END_SOUND) {
+			// config.enableEndSoundEffect(R.raw.bdspeech_speech_end); //
+			// 设置识别结束提示音
+		}
+		config.setSampleRate(VoiceRecognitionConfig.SAMPLE_RATE_8K); // 设置采样率,需要与外部音频一致
+
+		// mASREngine.startVoiceRecognition(voiceListener, config);
+
+	}
 
 	void initHandle() {
 		mHandler = new Handler() {
@@ -238,8 +262,7 @@ public class HaveCarV2Activity extends MapBaseV2Activity {
 
 	void initview() {
 		navbar = (TextView) findViewById(R.id.text_top_bar);
-		navbar.setTextColor(R.color.black);
-		navbar.setText("我有车");
+		navbar.setText("我用车");
 		btn_right = (ImageButton) findViewById(R.id.btn_right);
 		btn_right.setVisibility(View.GONE);
 		btn_left = (ImageButton) findViewById(R.id.btn_left);
@@ -248,7 +271,7 @@ public class HaveCarV2Activity extends MapBaseV2Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				HaveCarV2Activity.this.finish();
+				UserCarActivity.this.finish();
 			}
 		});
 		textview_start = (TextView) findViewById(R.id.textview_start);
@@ -311,12 +334,14 @@ public class HaveCarV2Activity extends MapBaseV2Activity {
 		button_onsearch = (ImageButton) findViewById(R.id.button_onsearch);
 		button_onsearch.setVisibility(View.GONE);
 
-		btn_right.setOnClickListener(new OnClickListener() {
+		button_start = (Button) findViewById(R.id.button_start);
+		button_start.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if(currentLine!=null){
 					av.setCurrentLine(currentLine);
-					Intent i = new Intent(HaveCarV2Activity.this,HaveCarCreateActivity.class);
+					Intent i = new Intent(UserCarActivity.this,RoomListActivity.class);
+					i.putExtra("lineId", currentLine.id);
 					startActivity(i);
 				}else{
 					showToastError("请选择线路");
@@ -430,6 +455,80 @@ public class HaveCarV2Activity extends MapBaseV2Activity {
 		// item2.setMarker(getResources().getDrawable(R.drawable.icon_markb));
 	}
 
+	/**
+	 * 重写用于处理语音识别回调的监听器
+	 */
+	class MyVoiceRecogListener implements VoiceClientStatusChangeListener {
+
+		@Override
+		public void onClientStatusChange(int status, Object obj) {
+			switch (status) {
+			// 语音识别实际开始，这是真正开始识别的时间点，需在界面提示用户说话。
+			case VoiceRecognitionClient.CLIENT_STATUS_START_RECORDING:
+				showProcessDialog("语音输入中..");
+				showToastError("语音识别实际开始");
+				break;
+			// 检测到语音起点
+			case VoiceRecognitionClient.CLIENT_STATUS_SPEECH_START:
+				showToastError("检测到语音起点");
+				break;
+			// 已经检测到语音终点，等待网络返回
+			case VoiceRecognitionClient.CLIENT_STATUS_SPEECH_END:
+				showToastError("已经检测到语音终点，等待网络返回");
+				break;
+			// 语音识别完成，显示obj中的结果
+			case VoiceRecognitionClient.CLIENT_STATUS_FINISH:
+				dismissProcessDialog();
+				updateRecognitionResult(obj);
+
+				break;
+			// 处理连续上屏
+			case VoiceRecognitionClient.CLIENT_STATUS_UPDATE_RESULTS:
+				// showToastError("处理连续上屏");
+				break;
+			// 用户取消
+			case VoiceRecognitionClient.CLIENT_STATUS_USER_CANCELED:
+				showToastError("用户取消");
+				break;
+			default:
+				break;
+			}
+
+		}
+
+		@Override
+		public void onError(int errorType, int errorCode) {
+			String s = getString(R.string.error_occur,
+					Integer.toHexString(errorCode));
+			dismissProcessDialog();
+			showToastError(errorCode + "处理错误" + s);
+		}
+
+		@Override
+		public void onNetworkStatusChange(int status, Object obj) {
+			// 这里不做任何操作不影响简单识别
+		}
+	}
+
+	private void updateRecognitionResult(Object result) {
+		if (result != null && result instanceof List) {
+			List results = (List) result;
+			if (results.size() > 0) {
+				if (results.get(0) instanceof List) {
+					List<List<Candidate>> sentences = (List<List<Candidate>>) result;
+					StringBuffer sb = new StringBuffer();
+					for (List<Candidate> candidates : sentences) {
+						if (candidates != null && candidates.size() > 0) {
+							sb.append(candidates.get(0).getWord());
+						}
+					}
+					edittext_end.setText(sb.toString());
+				} else {
+					edittext_end.setText(results.get(0).toString());
+				}
+			}
+		}
+	}
 
 	/**
 	 * 刷新图层， 判断当前的start end 是否为空 刷新，并且给出路线
@@ -543,105 +642,5 @@ public class HaveCarV2Activity extends MapBaseV2Activity {
 		mMapView.refresh();
 
 	}
-	void startVoice() {
-		mASREngine.startVoiceRecognition(voiceListener, config);
-	}
 
-	void initVoice() {
-		voiceListener = new MyVoiceRecogListener();
-		mASREngine = VoiceRecognitionClient.getInstance(this);
-		mASREngine.setTokenApis("8MAxI5o7VjKSZOKeBzS4XtxO",
-				"Ge5GXVdGQpaxOmLzc8fOM8309ATCz9Ha");
-		config = new VoiceRecognitionConfig();
-		config.setProp(Config.CURRENT_PROP);
-		config.setLanguage(Config.getCurrentLanguage());
-		config.enableVoicePower(Config.SHOW_VOL); // 音量反馈。
-		if (Config.PLAY_START_SOUND) {
-			// config.enableBeginSoundEffect(R.raw.bdspeech_recognition_start);
-			// // 设置识别开始提示音
-		}
-		if (Config.PLAY_END_SOUND) {
-			// config.enableEndSoundEffect(R.raw.bdspeech_speech_end); //
-			// 设置识别结束提示音
-		}
-		config.setSampleRate(VoiceRecognitionConfig.SAMPLE_RATE_8K); // 设置采样率,需要与外部音频一致
-
-		// mASREngine.startVoiceRecognition(voiceListener, config);
-
-	}
-
-	/**
-	 * 重写用于处理语音识别回调的监听器
-	 */
-	class MyVoiceRecogListener implements VoiceClientStatusChangeListener {
-
-		@Override
-		public void onClientStatusChange(int status, Object obj) {
-			switch (status) {
-			// 语音识别实际开始，这是真正开始识别的时间点，需在界面提示用户说话。
-			case VoiceRecognitionClient.CLIENT_STATUS_START_RECORDING:
-				showProcessDialog("语音输入中..");
-				showToastError("语音识别实际开始");
-				break;
-			// 检测到语音起点
-			case VoiceRecognitionClient.CLIENT_STATUS_SPEECH_START:
-				showToastError("检测到语音起点");
-				break;
-			// 已经检测到语音终点，等待网络返回
-			case VoiceRecognitionClient.CLIENT_STATUS_SPEECH_END:
-				showToastError("已经检测到语音终点，等待网络返回");
-				break;
-			// 语音识别完成，显示obj中的结果
-			case VoiceRecognitionClient.CLIENT_STATUS_FINISH:
-				dismissProcessDialog();
-				updateRecognitionResult(obj);
-
-				break;
-			// 处理连续上屏
-			case VoiceRecognitionClient.CLIENT_STATUS_UPDATE_RESULTS:
-				// showToastError("处理连续上屏");
-				break;
-			// 用户取消
-			case VoiceRecognitionClient.CLIENT_STATUS_USER_CANCELED:
-				showToastError("用户取消");
-				break;
-			default:
-				break;
-			}
-
-		}
-
-		@Override
-		public void onError(int errorType, int errorCode) {
-			String s = getString(R.string.error_occur,
-					Integer.toHexString(errorCode));
-			dismissProcessDialog();
-			showToastError(errorCode + "处理错误" + s);
-		}
-
-		@Override
-		public void onNetworkStatusChange(int status, Object obj) {
-			// 这里不做任何操作不影响简单识别
-		}
-	}
-
-	private void updateRecognitionResult(Object result) {
-		if (result != null && result instanceof List) {
-			List results = (List) result;
-			if (results.size() > 0) {
-				if (results.get(0) instanceof List) {
-					List<List<Candidate>> sentences = (List<List<Candidate>>) result;
-					StringBuffer sb = new StringBuffer();
-					for (List<Candidate> candidates : sentences) {
-						if (candidates != null && candidates.size() > 0) {
-							sb.append(candidates.get(0).getWord());
-						}
-					}
-					edittext_end.setText(sb.toString());
-				} else {
-					edittext_end.setText(results.get(0).toString());
-				}
-			}
-		}
-	}
 }

@@ -31,6 +31,18 @@ public class HandleConfig {
 	
 	public static final int QUERYLINELIST=1016;//查询周边据点信息
 	public static final int CREATEROOM=1017;//创建房间
+	public static final int GETROOMINFO=1018;//创建房间
+	public static final int REFRESHROOMINFO=1019;//创建房间
+	public static final int QUERTLINEROOMS=1020;//创建房间
+	public static final int QUERYLINEDETAIL=1021;//创建房间
+	public static final int QUERYFAVLIST=1022;//创建房间
+	public static final int JOINROOM=1023;//创建房间
+	public static final int QUERYROOMUSERS=1024;//创建房间
+	public static final int QUERYUSERDETAIL=1025;//创建房间
+	public static final int QUITROOM=1026;//创建房间
+	
+	
+	
 	
 	
 	

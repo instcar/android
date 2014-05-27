@@ -118,6 +118,7 @@ public class RegisterActivity extends BaseActivity {
 	        }; 
 	    }; 
 		
+	    initBaseNav();
 		phone = (EditText) findViewById(R.id.textuserName);
 		phonecode = (EditText) findViewById(R.id.textphonecode);
 		password = (EditText) findViewById(R.id.textpassword);

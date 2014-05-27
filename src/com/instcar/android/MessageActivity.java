@@ -1,7 +1,5 @@
 package com.instcar.android;
 
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -9,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -16,22 +15,31 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import android.R.integer;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.format.DateUtils;
 import android.text.style.ImageSpan;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -41,16 +49,25 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.instcar.android.config.HandleConfig;
+import com.instcar.android.entry.Line;
+import com.instcar.android.entry.MessagePerson;
+import com.instcar.android.entry.NetDataEntry;
+import com.instcar.android.entry.NetEntry;
+import com.instcar.android.entry.Room;
+import com.instcar.android.floatwindow.FloatWindowBigView;
+import com.instcar.android.floatwindow.FloatWindowBigViewPassager;
 import com.instcar.android.im.ChatMsgEntity;
 import com.instcar.android.im.ChatMsgViewAdapter;
 import com.instcar.android.im.Expressions;
-import com.instcar.android.util.MyLog;
-import com.mycommonlib.android.common.util.TimeUtils;
+import com.mycommonlib.android.common.util.JSONUtils;
 
-public class MessageActivity extends BaseActivity implements OnClickListener{
+public class MessageActivity extends BaseActivity implements OnClickListener {
 	private Context mCon;
 	private ViewPager viewPager;
 	private ArrayList<GridView> grids;
@@ -61,8 +78,6 @@ public class MessageActivity extends BaseActivity implements OnClickListener{
 	private int[] expressionImages2;
 	private String[] expressionImageNames2;
 	private Button mBtnSend;
-	private Button mBtnBack;
-	private ImageButton rightBtn;
 	private ImageButton voiceBtn;
 	private ImageButton keyboardBtn;
 	private ImageButton biaoqingBtn;
@@ -78,20 +93,37 @@ public class MessageActivity extends BaseActivity implements OnClickListener{
 	private GridView gView1;
 	private GridView gView2;
 	private GridView gView3;
-	private String roomid="18600869986";
+	private String roomid;
+	private String openfire;
 	private ChatMsgViewAdapter mAdapter;
 	private List<ChatMsgEntity> mDataArrays = new ArrayList<ChatMsgEntity>();
-
-	private final static int COUNT = 8;
+	private static LayoutParams smallWindowParams;
 	XMPPConnection connection;
-	MultiUserChat muc ;
+	MultiUserChat muc;
+
+	//需要初始化才能用的信息
+	TextView numberSeat;
+	PopupWindow mPop;
+	Room room = new Room();// 存放房间信息
+	List<MessagePerson> person = new ArrayList<MessagePerson>();
+	MessagePerson owner = new MessagePerson();
+	MessagePerson currentPerson = new MessagePerson();
+	Line line = new Line();
 	
-	
-	
+
+	public int currentUserNum = 0;
+	private static FloatWindowBigView bigWindow;
+
+	private boolean ischengke = true;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_message);
+		roomid = getIntent().getExtras().getString("roomid");
+		openfire = getIntent().getExtras().getString("openfire");
+		ischengke = getIntent().getExtras().getBoolean("ischengke", true);// 默认是成个角色
+
 		getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		mCon = MessageActivity.this;
@@ -118,7 +150,7 @@ public class MessageActivity extends BaseActivity implements OnClickListener{
 		// 返回
 
 		// 个人信息
-	
+
 		// 语音
 		voiceBtn = (ImageButton) findViewById(R.id.chatting_voice_btn);
 		voiceBtn.setOnClickListener(this);
@@ -132,9 +164,30 @@ public class MessageActivity extends BaseActivity implements OnClickListener{
 		biaoqingfocuseBtn.setOnClickListener(this);
 
 		mEditTextContent = (EditText) findViewById(R.id.et_sendmessage);
+		numberSeat = (TextView) findViewById(R.id.numberseat);
+		initSPopupView();
+		numberSeat.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if (mPop.isShowing()) {
+					mPop.dismiss();
+				} else {
+					mPop.showAsDropDown(numberSeat, 0, -50);
+				}
+			}
+		});
+
 		initViewPager();
 		initData();
+		initHandle();
+		initBaseNav();
+		btn_right.setVisibility(View.GONE);
+		showProcessDialog("正在进入聊天室");
 		new Thread(new SmackThread()).start();
+		// 获取room详情
+		getroominfo(roomid);
+
 	}
 
 	private void initViewPager() {
@@ -210,55 +263,117 @@ public class MessageActivity extends BaseActivity implements OnClickListener{
 		viewPager.setOnPageChangeListener(new GuidePageChangeListener());
 	}
 
+	void initMucRoom(){
 
+	}
 	/*
 	 * 
 	 */
-	void initSmack(){
+	
+	void initSmack() {
 		try {
-			
-			ConnectionConfiguration config = new ConnectionConfiguration("115.28.231.132", 13000);
-			connection =new XMPPConnection(config);
-			connection.connect();
-			connection.login(av.getUserData().phone, "123456");
-			Presence presence = new Presence(Presence.Type.unavailable);
-			connection.sendPacket(presence);
-//			Message msg = new Message("@ay140222164105110546z", Message.Type.chat);
-//			msg.setBody("哈哈");
-//			connection.sendPacket(msg);
 
-			 muc = new MultiUserChat(connection, roomid+"@conference.ay140222164105110546z");
-			 muc.join(av.getUserData().phone);
-			 muc.sendMessage("加入了");
-			 
-			 muc.addMessageListener(new PacketListener() {
-				
+			if(connection==null){
+				ConnectionConfiguration config = new ConnectionConfiguration(
+						"115.28.231.132", 13000);
+				config.setSASLAuthenticationEnabled(false);  
+				config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);  
+				connection = new XMPPConnection(config);
+
+			}
+			if(!connection.isConnected()){
+				connection.connect();
+				connection.login(av.getUserData().phone, "123456");
+				Presence presence = new Presence(Presence.Type.unavailable);
+				connection.sendPacket(presence);
+			}
+			if(muc==null){
+				muc = new MultiUserChat(connection, openfire);
+			}
+			if(!muc.isJoined()){
+				muc.join(av.getUserData().phone);
+			}
+			
+			muc.addMessageListener(new PacketListener() {
+
 				@Override
 				public void processPacket(Packet packet) {
 					// TODO Auto-generated method stub
 					
 					Message message = (Message) packet;
-					MyLog.d(message.getBody());
+					System.out.println(message.getFrom()+"---"+message.getBody());
 					ChatMsgEntity entity = new ChatMsgEntity();
 					entity.setDate(getDate());
-					entity.setName(message.getFrom());
-					entity.setMsgType(true);
-					entity.setText(message.getBody());
-					
-
-					mDataArrays.add(entity);
-					mAdapter.notifyDataSetChanged();
-					mListView.setSelection(mListView.getBottom());
+					String[] names = message.getFrom().split("/");
+					if (!names[1].equals(av.getUserData().phone)) {
+						entity.setName(names[1]);
+						entity.setMsgType(true);
+						entity.setText(message.getBody());
+						mDataArrays.add(entity);
+						mAdapter.notifyDataSetChanged();
+						mListView.setSelection(mListView.getBottom());
+						if(!names[1].equals("admin")){
+							
+							
+						}
+					}
 				}
 			});
-
+			mHandler.sendEmptyMessage(4);
 		} catch (Exception e) {
+			dismissProcessDialog();
 			// TODO: handle exception
+			mHandler.sendEmptyMessage(3);
 			e.printStackTrace();
 		}
-		
-		
+
 	}
+
+	void uodateSmallView(int number) {
+		numberSeat.setText(number + "");
+		int have = number;
+		int all = Integer.valueOf(room.max_seat_num);
+		int background = R.drawable.a1number0;
+		if (all == 2 && have == 0) {
+			background = R.drawable.a2number0;
+		}
+		if (all == 2 && have == 1) {
+			background = R.drawable.a2number1;
+		}
+		if (all == 2 && have == 2) {
+			background = R.drawable.a2number2;
+		}
+		if (all == 3 && have == 0) {
+			background = R.drawable.a3number0;
+		}
+		if (all == 3 && have == 1) {
+			background = R.drawable.a3number1;
+		}
+		if (all == 3 && have == 2) {
+			background = R.drawable.a3number2;
+		}
+		if (all == 3 && have == 3) {
+			background = R.drawable.a3number3;
+		}
+		if (all == 4 && have == 0) {
+			background = R.drawable.a4number0;
+		}
+		if (all == 4 && have == 1) {
+			background = R.drawable.a4number1;
+		}
+		if (all == 4 && have == 2) {
+			background = R.drawable.a4number2;
+		}
+		if (all == 4 && have == 3) {
+			background = R.drawable.a4number3;
+		}
+		if (all == 4 && have == 4) {
+			background = R.drawable.a4number4;
+		}
+
+		numberSeat.setBackgroundResource(background);
+	}
+
 	private void initData() {
 
 		mAdapter = new ChatMsgViewAdapter(this, mDataArrays);
@@ -279,32 +394,36 @@ public class MessageActivity extends BaseActivity implements OnClickListener{
 		return sbBuffer.toString();
 	}
 
-public class SmackThread   implements Runnable{
+	public class SmackThread implements Runnable {
 
-	@Override
-	public void run() {
-		initSmack();
+		@Override
+		public void run() {
+			initSmack();
+		}
 	}
-}
+
 	@Override
 	public void onClick(View v) {
 		boolean isFoused = false;
 		switch (v.getId()) {
 		// 返回
-	
+
 		// 发送
 		case R.id.btn_send:
 			String content = mEditTextContent.getText().toString();
-			System.out.println("edit.get的内容 = " + content);
 			if (content.length() > 0) {
 				ChatMsgEntity entity = new ChatMsgEntity();
 				entity.setDate(getDate());
 				entity.setName(av.getUserData().phone);
 				entity.setMsgType(false);
-				entity.setText(content);
+				entity.setText(MessageActivity.this.mekeMessage(content));
 				
-				 try {
-					muc.sendMessage(content);
+				try {
+					if(muc!=null&&muc.isJoined()){
+						muc.sendMessage(content);
+					}else{
+						showToastError("聊天室无链接");
+					}
 				} catch (XMPPException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -342,7 +461,7 @@ public class SmackThread   implements Runnable{
 			biaoqingfocuseBtn.setVisibility(biaoqingfocuseBtn.VISIBLE);
 			viewPager.setVisibility(viewPager.VISIBLE);
 			page_select.setVisibility(page_select.VISIBLE);
-			
+
 			break;
 		case R.id.chatting_biaoqing_focuse_btn:
 			biaoqingBtn.setVisibility(biaoqingBtn.VISIBLE);
@@ -363,13 +482,11 @@ public class SmackThread   implements Runnable{
 
 		@Override
 		public void onPageScrollStateChanged(int arg0) {
-			System.out.println("页面滚动" + arg0);
 
 		}
 
 		@Override
 		public void onPageScrolled(int arg0, float arg1, int arg2) {
-			System.out.println("换页了" + arg0);
 		}
 
 		@Override
@@ -420,7 +537,6 @@ public class SmackThread   implements Runnable{
 								Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 						// 编辑框设置数据
 						mEditTextContent.append(spannableString);
-						System.out.println("edit的内容 = " + spannableString);
 					}
 				});
 				break;
@@ -462,7 +578,6 @@ public class SmackThread   implements Runnable{
 								Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 						// 编辑框设置数据
 						mEditTextContent.append(spannableString);
-						System.out.println("edit的内容 = " + spannableString);
 					}
 				});
 				break;
@@ -471,4 +586,256 @@ public class SmackThread   implements Runnable{
 		}
 	}
 
+	/*
+	 * 返回的原始数据为{"status":200,"data":{"id":"209","openfire":"",
+	 * "user_id":"18600869986","line_id":"2","price":"10.00","status":"0",
+	 * "start_time":"2014-05-22","max_seat_num":"4",
+	 * "description":"\u54c8\u54c8","addtime":"2014-05-23 00:15:04",
+	 * "modtime":"2014-05-23 00:15:04"
+	 * },"msg":"\u83b7\u53d6\u623f\u95f4\u4fe1\u606f\u6210\u529f"}
+	 */
+	void updteRoomInfo(String data) {
+		try {
+
+			JSONObject obj = new JSONObject(data).getJSONObject("data");
+			JSONObject tmproom = obj.getJSONObject("room");
+			JSONObject tmpuser = obj.getJSONObject("user");
+
+			room.roomid = tmproom.getString("id");
+			room.roomdesc = tmproom.getString("description");
+			room.createTime = tmproom.getString("addtime");
+			room.openfireid = tmproom.getString("openfire");
+			room.userid = tmproom.getString("user_id");
+			room.lineid = tmproom.getString("line_id");
+			room.max_seat_num = tmproom.getString("max_seat_num");
+			room.have_seat_num = JSONUtils.getString(tmproom,
+					"booked_seat_num", "0");
+			room.roomkongwei = (Integer.valueOf(room.max_seat_num) - Integer
+					.valueOf(room.have_seat_num)) + "";
+
+			owner.id = tmpuser.getString("id");
+			owner.name = tmpuser.getString("name");
+			owner.phone = tmpuser.getString("phone");
+
+			uodateSmallView(Integer.valueOf(room.have_seat_num));
+			// 更新条小图标
+			if (currentUserNum != Integer.valueOf(room.have_seat_num)) {// 如果俩不一样，就更新userlist
+				currentUserNum = Integer.valueOf(room.have_seat_num);
+				QueryRoomUsers(roomid);
+			}
+
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	void initRoomData(){
+		
+		
+	}
+	void initSPopupView() {
+		currentPerson.id = av.getUserData().id;
+		currentPerson.phone = av.getUserData().phone;
+		currentPerson.pic = av.getUserData().headpic;
+		if (ischengke == true) {
+			bigWindow = new FloatWindowBigViewPassager(this, owner,
+					currentPerson, room);
+			setOptClicker();//设置optbutton的点击
+		} else {
+			// bigWindow =new FloatWindowBigViewDriver(this,4,2);
+		}
+		mPop = new PopupWindow(bigWindow, LayoutParams.MATCH_PARENT,
+				LayoutParams.WRAP_CONTENT, true);
+		mPop.setBackgroundDrawable(new BitmapDrawable());
+		mPop.setOutsideTouchable(true);
+		// mPop.showAsDropDown(findViewById(R.id.small_window_layout),0,-50);
+
+	}
+
+	void initHandle() {
+
+		mHandler = new Handler() {
+			@Override
+			public void handleMessage(android.os.Message msg) {
+				// TODO Auto-generated method stub
+				super.handleMessage(msg);
+
+				switch (msg.what) {
+				case HandleConfig.GETROOMINFO:// 获取room详情，并且1分钟更新一次
+					dismissProcessDialog();
+					NetEntry entry = decodePointList(msg.getData().getString(
+							"data"));
+					if (NetEntry.CODESUCESS.equals(entry.status)) {
+						updteRoomInfo(msg.getData().getString("data"));
+
+					} else {
+						showToastError(entry.msg);
+					}
+					android.os.Message mg = android.os.Message.obtain();
+					mg.what = HandleConfig.REFRESHROOMINFO;
+					mHandler.sendMessageDelayed(mg, 10000);
+
+					break;
+				case HandleConfig.REFRESHROOMINFO:
+					if(isFinishing()==false){
+						getroominfo(roomid);
+					}
+					break;
+				case HandleConfig.QUERYROOMUSERS:// 更新room user list
+
+					NetEntry entry1 = decodePointList(msg.getData().getString(
+							"data"));
+
+					if (NetEntry.CODESUCESS.equals(entry1.status)) {
+						JSONObject jsonobj;
+						try {
+							jsonobj = new JSONObject(msg.getData().getString(
+									"data"));
+
+							JSONObject tmp = jsonobj.getJSONObject("data");
+							JSONArray tmpList = tmp.getJSONArray("list");
+							person.clear();
+							for (int i = 0; i < tmpList.length(); i++) {
+								JSONObject t = tmpList.getJSONObject(i);
+								String phone = t.getString("phone");
+								String id = t.getString("id");
+								String name = t.getString("name");
+								String headpic = t.getString("headpic");
+								if (phone.equals(owner.phone)) {// 房主
+									continue;
+								}
+								MessagePerson p = new MessagePerson();
+								p.id = id;
+								p.name=name;
+								p.pic = headpic;
+								p.phone = phone;
+								person.add(p);
+							}
+
+							bigWindow.UpdateRoomPerson(person);
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					} else {
+						showToastError(entry1.msg);
+					}
+
+					break;
+				case 3:
+					showToastError("聊天室链接失败");
+				case 4:
+					dismissProcessDialog();
+					break;
+				default:
+					break;
+				}
+			}
+
+		};
+	}
+
+	public String mekeMessage(String Content){
+		String msg="";
+		try {
+		JSONObject job = new JSONObject();
+			job.put("name", currentPerson.name);
+			job.put("user_id", currentPerson.id);
+			job.put("phone", currentPerson.phone);
+			job.put("head_pic", currentPerson.pic);
+			job.put("message", Content);
+			msg = job.toString();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return msg;
+		
+	}
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		super.onRestart();
+		showProcessDialog("正在进入聊天室");
+		new Thread(new SmackThread()).start();
+	}
+
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		return super.onKeyDown(keyCode, event);
+	}
+
+	void setOptClicker(){
+		if(ischengke==true){
+			bigWindow.opt.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					if(bigWindow.personlist.get(currentPerson.phone)!=null){
+						quitroom(roomid, currentPerson.id);
+					}else{
+						joinroom(roomid, currentPerson.id);
+					}
+					
+				}
+			});
+			
+		}else{
+			
+		}
+	}
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		try {
+			if(muc!=null){
+				
+				muc.leave();
+			}
+			if(connection!=null){
+				
+				connection.disconnect();
+				
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	
+		super.finish();
+	}
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		this.finish();
+		super.onBackPressed();
+	}
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		if(connection.isConnected()){
+			connection.disconnect();
+			connection=null;
+		}
+		mHandler.removeMessages(HandleConfig.REFRESHROOMINFO);
+		mHandler.removeMessages(HandleConfig.GETROOMINFO);
+		System.out.println("---onDestroy---");
+		super.onDestroy();
+	}
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		System.out.println("---onStop---");
+		super.onStop();
+	}
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		System.out.println("---onResume---");
+		super.onResume();
+	}
 }
