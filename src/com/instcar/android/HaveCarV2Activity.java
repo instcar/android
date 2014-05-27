@@ -125,6 +125,7 @@ public class HaveCarV2Activity extends MapBaseV2Activity {
 				currentLine= linelist.get(position);
 				pointlist.setVisibility(View.GONE);
 				btn_right.setVisibility(View.VISIBLE);
+				btn_right.setImageResource(R.drawable.abtn_confirm_g);
 				refreshMapView();
 				
 				
@@ -297,17 +298,8 @@ public class HaveCarV2Activity extends MapBaseV2Activity {
 		});
 
 		button_voice = (ImageButton) findViewById(R.id.button_voice);
-		button_voice.setVisibility(View.VISIBLE);
+		//button_voice.setVisibility(View.VISIBLE);
 
-		button_voice.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				setstatus(1);
-
-				startVoice();
-			}
-		});
 		button_onsearch = (ImageButton) findViewById(R.id.button_onsearch);
 		button_onsearch.setVisibility(View.GONE);
 
@@ -368,10 +360,10 @@ public class HaveCarV2Activity extends MapBaseV2Activity {
 	public void setstatus(int status) {
 		switch (status) {
 		case 1:
-			button_voice.setVisibility(View.GONE);
-			button_onsearch.setVisibility(View.VISIBLE);
-			edittext_end.setVisibility(View.VISIBLE);
-			view.setVisibility(View.GONE);
+//			button_voice.setVisibility(View.GONE);
+//			button_onsearch.setVisibility(View.VISIBLE);
+//			edittext_end.setVisibility(View.VISIBLE);
+//			view.setVisibility(View.GONE);
 			break;
 		case 2:
 

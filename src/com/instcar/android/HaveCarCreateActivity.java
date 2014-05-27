@@ -58,7 +58,7 @@ public class HaveCarCreateActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //注意：请在试用setContentView前初始化BMapManager对象，否则会报错  
-        setContentView(R.layout.have_car_map);  
+        setContentView(R.layout.have_car_create);  
         edittextdesc = (EditText) findViewById(R.id.create_room_desc);
         buttonok =(Button) findViewById(R.id.create_room_ok);
         peopleRate = (RatingBar) findViewById(R.id.ratingbar1);
@@ -92,7 +92,7 @@ public class HaveCarCreateActivity extends BaseActivity {
 	       for (int i = 0; i < 24; i++) {
 	    	   hoursarr[i]=i+"";
 	   		}
-	        DayArrayAdapter adapter = new DayArrayAdapter(this, hoursarr);
+	        DayArrayAdapter adapter = new DayArrayAdapter(this, hoursarr,R.layout.havr_car_create_whell_item,R.id.title);
 	        adapter.setTextColor(0xFFFFFFFF);
 	        adapter.setTextSize(25);
 	        hours.setViewAdapter(adapter); 
@@ -105,7 +105,7 @@ public class HaveCarCreateActivity extends BaseActivity {
 	        
 	        mins = (WheelView) findViewById(R.id.min);
 	        
-	        DayArrayAdapter adapter2 = new DayArrayAdapter(this, minarr);
+	        DayArrayAdapter adapter2 = new DayArrayAdapter(this, minarr,R.layout.havr_car_create_whell_item,R.id.title);
 	        adapter2.setTextColor(0xFFFFFFFF);
 	        adapter2.setTextSize(25);
 	        mins.setViewAdapter(adapter2); 
@@ -118,9 +118,9 @@ public class HaveCarCreateActivity extends BaseActivity {
 		
 		shangwu = (WheelView) findViewById(R.id.shangwu);
 		
-		DayArrayAdapter adapter3 = new DayArrayAdapter(this, shangwuarr);
+		DayArrayAdapter adapter3 = new DayArrayAdapter(this, shangwuarr,R.layout.havr_car_create_whell_item,R.id.title);
 		adapter3.setTextColor(0xFFFFFFFF);
-		adapter3.setTextSize(25);
+		adapter3.setTextSize(23);
 		shangwu.setViewAdapter(adapter3); 
 		shangwu.setCyclic(true);
 		
@@ -129,7 +129,7 @@ public class HaveCarCreateActivity extends BaseActivity {
 		
 		people = (WheelView) findViewById(R.id.people);
 		
-		DayArrayAdapter adapter4 = new DayArrayAdapter(this, peoplearr);
+		DayArrayAdapter adapter4 = new DayArrayAdapter(this, peoplearr,R.layout.havr_car_create_whell_item,R.id.title);
 		adapter4.setTextColor(0xFFFFFFFF);
 		adapter4.setTextSize(25);
 		people.setViewAdapter(adapter4); 
@@ -143,7 +143,10 @@ public class HaveCarCreateActivity extends BaseActivity {
 			}
 		});
 		
-		buttonok.setOnClickListener(new OnClickListener() {
+		btn_right.setVisibility(View.VISIBLE);
+		btn_right.setImageResource(R.drawable.abtn_confirm_g);
+		
+		OnClickListener c =  new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Calendar c = Calendar.getInstance();
@@ -159,7 +162,9 @@ public class HaveCarCreateActivity extends BaseActivity {
 				showProcessDialog("正在进入房间");
 				createRoom(av.getCurrentLine(), desc, year+"-"+month+"-"+strdar+" "+shour+":"+smin, people+"");
 			}
-		});
+		};
+		btn_right.setOnClickListener(c);
+		buttonok.setOnClickListener(c);
 		
 		initHandle();
     }
@@ -250,8 +255,8 @@ public class HaveCarCreateActivity extends BaseActivity {
     private class DayArrayAdapter extends AbstractWheelTextAdapter {
 
     	String[] items ;
-    	protected DayArrayAdapter(Context context,String[] arr) {
-    		super(context);
+    	protected DayArrayAdapter(Context context,String[] arr,int itemResource, int itemTextResource) {
+    		super(context, itemResource,  itemTextResource);
     		this.items = arr;
     		// TODO Auto-generated constructor stub
     	}
