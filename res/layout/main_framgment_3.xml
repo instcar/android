@@ -3,16 +3,20 @@
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
+    android:paddingLeft="15dip"
+    android:paddingRight="15dip"
     android:orientation="vertical" >
 
     <ListView
         android:id="@+id/listView1"
+		android:dividerHeight="10dip"
+		android:divider="@android:color/transparent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>
 
     <include 
-        android:id="@+id/data_empty"		
+        android:id="@+id/data_empty"	
          android:layout_width="match_parent"
         android:layout_height="wrap_content"
         layout="@layout/list_data_empty"

@@ -66,7 +66,6 @@
                         android:layout_height="wrap_content"
                         android:focusable="true" 
                         android:paddingBottom="5dip"
-						android:focusableInTouchMode="true" 
                         android:orientation="horizontal" >
 
                         <TextView
@@ -108,6 +107,7 @@
 
                         <EditText
                             android:id="@+id/edittext_end"
+                            android:focusableInTouchMode="true"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
