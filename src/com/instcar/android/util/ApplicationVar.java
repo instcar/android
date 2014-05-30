@@ -107,12 +107,26 @@ public class ApplicationVar extends Application {
 		}
 	}
 
+	
 	public void setUserData(NetDataEntry userdata){
 		this.userdata = userdata;
+		SharedPreferences.Editor mEditor = pref.edit();
+		mEditor.putString("id", userdata.id);
+		mEditor.putString("phone", userdata.phone);
+		mEditor.putString("name", userdata.name);
+		mEditor.putString("headpic", userdata.headpic);
+		mEditor.commit();
+		
+		
 		
 	}
 	public NetDataEntry getUserData(){
-		return this.userdata;
+		NetDataEntry  a = new NetDataEntry();
+		a.id = pref.getString("id", "");
+		a.phone = pref.getString("phone", "");
+		a.name = pref.getString("name", "");
+		a.headpic = pref.getString("headpic", "");
+		return a;
 	}
 
 	

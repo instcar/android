@@ -545,6 +545,23 @@ public class BaseActivity extends Activity {
 		new Thread(thread).start();
 		
 	}
+	public void addfav(String lineid){
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("lineid", lineid);
+		
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apiserveraddfavorite());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.ADDFAV);
+		new Thread(thread).start();
+		
+	}
 	public void quitroom(String roomid,String user_id){
 		Map<String, String> param = new IdentityHashMap<String, String>();
 		param.put("room_id", roomid);

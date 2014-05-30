@@ -53,7 +53,7 @@ public class FavListAdapter extends BaseAdapter {
 		Line entry = list.get(position);
 		if (view == null) {
 			viewHolder = new ViewHolder();
-			view = LayoutInflater.from(mContext).inflate(R.layout.room_list_item, null);
+			view = LayoutInflater.from(mContext).inflate(R.layout.fav_way_list_item, null);
 			viewHolder.qidian = (TextView) view.findViewById(R.id.fav_textview_qidian);
 			viewHolder.qidiantip = (TextView) view.findViewById(R.id.fav_textview_qidian_tip);
 			viewHolder.zhongdian = (TextView) view.findViewById(R.id.fav_textview_zhongdian);
@@ -65,10 +65,14 @@ public class FavListAdapter extends BaseAdapter {
 		} else {
 			viewHolder = (ViewHolder) view.getTag();
 		}
-		viewHolder.qidian.setText(entry.list.get(0).name);
-		viewHolder.qidiantip.setText(entry.list.get(0).name);
-		viewHolder.zhongdian.setText(entry.list.get(entry.list.size()-1).name);
-		viewHolder.zhongdiantip.setText(entry.list.get(entry.list.size()-1).name);
+		String[] s =entry.name.split("-");
+		if(s.length==1){
+			s[1] =entry.name;
+		}
+		viewHolder.qidian.setText(s[0]);
+		viewHolder.qidiantip.setText(entry.name);
+		viewHolder.zhongdian.setText(s[1]);
+		viewHolder.zhongdiantip.setText(entry.name);
 		
 		//根据position获取分类的首字母的Char ascii值
 		

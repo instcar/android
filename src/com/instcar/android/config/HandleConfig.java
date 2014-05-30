@@ -40,6 +40,8 @@ public class HandleConfig {
 	public static final int QUERYROOMUSERS=1024;//创建房间
 	public static final int QUERYUSERDETAIL=1025;//创建房间
 	public static final int QUITROOM=1026;//创建房间
+	public static final int GETUSERROOMS=1027;//创建房间
+	public static final int ADDFAV=1028;//创建房间
 	
 	
 	

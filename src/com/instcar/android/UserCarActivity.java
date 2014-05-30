@@ -125,6 +125,8 @@ public class UserCarActivity extends MapBaseV2Activity {
 				currentLine= linelist.get(position);
 				pointlist.setVisibility(View.GONE);
 				refreshMapView();
+				btn_right.setVisibility(View.VISIBLE);
+				btn_right.setImageResource(R.drawable.abtn_confirm_b);
 				
 				
 			}
@@ -319,23 +321,8 @@ public class UserCarActivity extends MapBaseV2Activity {
 			}
 		});
 
-		button_voice = (ImageButton) findViewById(R.id.button_voice);
-		button_voice.setVisibility(View.VISIBLE);
-
-		button_voice.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				setstatus(1);
-
-				startVoice();
-			}
-		});
-		button_onsearch = (ImageButton) findViewById(R.id.button_onsearch);
-		button_onsearch.setVisibility(View.GONE);
-
-		button_start = (Button) findViewById(R.id.button_start);
-		button_start.setOnClickListener(new OnClickListener() {
+		
+		btn_right.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if(currentLine!=null){
@@ -393,10 +380,7 @@ public class UserCarActivity extends MapBaseV2Activity {
 	public void setstatus(int status) {
 		switch (status) {
 		case 1:
-			button_voice.setVisibility(View.GONE);
-			button_onsearch.setVisibility(View.VISIBLE);
-			edittext_end.setVisibility(View.VISIBLE);
-			view.setVisibility(View.GONE);
+
 			break;
 		case 2:
 

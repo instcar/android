@@ -462,8 +462,7 @@ public class MapBaseV2Activity extends BaseActivity {
 	            myLocationOverlay.setData(locdata);
 	            //更新图层数据执行刷新后生效
 	            if(mMapView!=null){
-	            	
-	            mMapView.refresh();
+	            	mMapView.refresh();
 	            }
 	            //是手动触发请求或首次定位时，移动到定位点
 	            	//移动地图到定位点

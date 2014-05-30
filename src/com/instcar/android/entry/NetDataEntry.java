@@ -40,6 +40,9 @@ public class NetDataEntry {
 	public String openfire="";
 	public List<NetDataEntry> list= new ArrayList<NetDataEntry>();
 
+	public NetDataEntry() {
+		// TODO Auto-generated constructor stub
+	}
 	
 	//1:验证通过；2：未通过实名认证；3：正在认证中
 	

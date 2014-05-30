@@ -52,10 +52,14 @@ public class RoomListActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.room_list);
+		initBaseNav();
+		btn_right.setVisibility(View.GONE);
+		navbar.setText("");
 		lineId = getIntent().getStringExtra("lineId");
 		adapter = new RoomListAdapter(this, roomlist);
 		listview = (ListView) findViewById(R.id.room_list);
 		listview.setAdapter(adapter);
+		
 		listview.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -119,6 +123,25 @@ public class RoomListActivity extends BaseActivity {
 		            		showToastError(entry.msg);
 		            	}
 		                break; 
+		                case HandleConfig.QUERYLINEDETAIL:
+		                	data = msg.getData().getString("data");
+			            	entry = new NetEntry(data);
+			            	if(NetEntry.CODESUCESS.equals(entry.status)){//
+			            		JSONObject json;
+								try {
+									json = new JSONObject(data);
+									JSONObject dataarr = json.getJSONObject("data");
+									Line l = new Line();
+									l.id = "";
+								}catch (Exception e) {
+									// TODO: handle exception
+								}
+			            		
+			            	}else{
+			            		RoomListActivity.this.finish();
+			            		showToastError(entry.msg);
+			            	}
+		                	break;
 		            } 
 		        }; 
 		    }; 

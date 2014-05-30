@@ -160,6 +160,7 @@ public class HaveCarCreateActivity extends BaseActivity {
 				
 				String desc  = edittextdesc.getText().toString();
 				showProcessDialog("正在进入房间");
+				addfav(av.getCurrentLine().id);
 				createRoom(av.getCurrentLine(), desc, year+"-"+month+"-"+strdar+" "+shour+":"+smin, people+"");
 			}
 		};

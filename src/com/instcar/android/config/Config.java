@@ -179,10 +179,19 @@ public class Config {
 		
 		return BASEURL+"server/line/favoritelist";
 	}
+	public static String apiserveraddfavorite(){
+		
+		return BASEURL+"server/line/favorite";
+	}
 	
 	public static String apiserverroomjoin(){
 		
 		return BASEURL+"server/room/book";
+	}
+	
+	public static String apiservergetuserrooms(){
+		
+		return BASEURL+"server/room/getuserrooms";
 	}
 	public static String apiserverroomquit(){
 		

@@ -87,6 +87,25 @@ public class BaseFrangment  extends Fragment{
 		new Thread(thread).start();
 		
 	}
+	/*
+	 * h获取 收藏linelist
+	 */
+	public void getuserrooms(String uid) {
+		Map<String, String> param = new IdentityHashMap<String, String>();
+		param.put("user_id", uid);
+		// 需要修改1
+		CommonService service = new CommonService(
+				Config.apiservergetuserrooms());
+		service.setParam(param);
+		service.setAv(av);
+		CommonThread thread = new CommonThread();
+		thread.setHandle(mHandler);
+		thread.setService(service);
+		// 需要修改2
+		thread.setwhat(HandleConfig.GETUSERROOMS);
+		new Thread(thread).start();
+		
+	}
 	public void addcar(String car_id, String license, String car1, String car2) {
 		Map<String, String> param = new IdentityHashMap<String, String>();
 		param.put("car_id", car_id);

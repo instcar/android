@@ -3,9 +3,14 @@ package com.instcar.android;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.instcar.android.adapter.FavListAdapter;
 import com.instcar.android.config.HandleConfig;
 import com.instcar.android.entry.Line;
+import com.instcar.android.entry.NetEntry;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
@@ -72,6 +77,29 @@ public class CommonWayFragment  extends BaseFrangment{
 				switch (msg.what) {
 				case HandleConfig.QUERYFAVLIST:
 					String data = msg.getData().getString("data");
+					NetEntry entry = new NetEntry(data);
+					if (NetEntry.CODESUCESS.equals(entry.status)) {
+						try {
+							JSONArray job = new JSONObject(data).getJSONObject("data").getJSONArray("list");
+							if(job!=null&&job.length()>0){
+								for (int i = 0; i < job.length(); i++) {
+									Line l = new Line();
+									l.id =job.getJSONObject(i).getString("id");
+									l.name =job.getJSONObject(i).getString("name");
+									l.description =job.getJSONObject(i).getString("description");
+									l.price =job.getJSONObject(i).getString("price");
+									lineList.add(l);
+								}
+								
+								adapter.updateListView(lineList);
+							}
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}else{
+						showToastError("");
+					}
 					
 					break;
 
