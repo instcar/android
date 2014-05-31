@@ -5,9 +5,9 @@ import android.content.Context;
 /**
  * @ClassName DipToPx
  * @PackageName com.prdoor.moviebox.util
- * @������ dongrui
- * @�޸����� 2012-11-19 ����3:34:48
- * @����
+ * @创建人 dongrui
+ * @修改日期 2012-11-19 上午3:34:48
+ * @描述
  */
 public class DipToPx {
 	private Context context;
