@@ -7,7 +7,6 @@
     android:background="@drawable/bg_gray_square"
     android:gravity="center"
     android:minHeight="250dip"
-    
     android:orientation="vertical"
     android:padding="0dip" >
 
@@ -15,27 +14,31 @@
         android:id="@+id/uploadbutton1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:background="@drawable/btn_bule"
         android:text="查看图片样例"
         android:textColor="@color/white"
         android:textSize="18sp" />
+
     <Button
-          android:id="@+id/uploadbutton2"
+        android:id="@+id/uploadbutton2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dip"
         android:background="@drawable/btn_addcar"
         android:text="拍摄照片"
-        android:layout_marginLeft="1dip"
-        android:layout_marginRight="1dip"
-        android:layout_marginTop="10dip"
         android:textColor="@color/white"
         android:textSize="18sp" />
+
     <Button
-          android:id="@+id/uploadbutton3"
+        android:id="@+id/uploadbutton3"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-           android:layout_marginLeft="1dip"
-        android:layout_marginRight="1dip"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_marginTop="10dip"
         android:background="@drawable/btn_addcar"
         android:text="从相册中选择照片"

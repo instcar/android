@@ -20,7 +20,7 @@
         android:layout_below="@id/imageView1"
         android:background="@drawable/nav_hint"
         android:gravity="center"
-      	android:paddingBottom="5dip"
+        android:paddingBottom="5dip"
         android:text="您好"
         android:textColor="@color/white"
         android:textSize="16sp" />
@@ -29,7 +29,8 @@
         android:id="@+id/pager"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/text_nav" >
+        android:layout_below="@id/text_nav"
+        android:layout_marginBottom="40dp" >
     </android.support.v4.view.ViewPager>
 
     <RelativeLayout
@@ -38,26 +39,26 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:paddingLeft="10dip"
-        android:paddingRight="10dip"
         android:background="@drawable/start_bottom_bar"
         android:gravity="bottom|center_horizontal"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip" >
 
         <ImageButton
-            android:visibility="gone"
             android:id="@+id/button_opt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:background="@android:color/transparent"
-            android:src="@drawable/btn_more" />
+            android:src="@drawable/btn_more"
+            android:visibility="gone" />
 
         <ImageButton
             android:id="@+id/button_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-  			android:layout_alignParentLeft="true"
+            android:layout_alignParentLeft="true"
             android:background="@android:color/transparent"
             android:src="@drawable/abtn_user" />
 

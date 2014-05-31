@@ -861,14 +861,14 @@ containing a value of this type.
         public static final int AppTheme=0x7f080006;
         public static final int CustomWindowTitleBackground=0x7f08001b;
         public static final int Dialog=0x7f08000e;
-        /** 模糊
+        /**  模糊 
          */
         public static final int HeadScale=0x7f08001f;
         public static final int MyDialogStyle=0x7f08001c;
-        /** 模糊
+        /**  模糊 
          */
         public static final int MyDialogStyleBottom=0x7f08001d;
-        /** 模糊
+        /**  模糊 
          */
         public static final int MyDialogStyleTop=0x7f08001e;
         public static final int MyProgressBar=0x7f080020;

@@ -65,7 +65,7 @@ public class UploadIdCardImgActivity extends BaseActivity {
 		setContentView(R.layout.user_info_upload_idcardpic);
 		initBaseNav();
 		navbar.setText("实名认证");
-		navbar2.setText("请按照一下样例拍摄和上传本人手持身份证的清晰照片");
+		navbar2.setText("请按照以下样例拍摄上传本人手持身份证的清晰照片");
 		btn_right.setVisibility(View.GONE);
 
 		initHandle();
